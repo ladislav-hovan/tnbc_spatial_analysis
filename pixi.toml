@@ -1,0 +1,14 @@
+[workspace]
+authors = ["Ladislav Hovan <ladislav.hovan@ncmbm.uio.no>"]
+channels = ["conda-forge", "netzoo", "bioconda"]
+name = "analysis_pipeline"
+platforms = ["linux-64"]
+version = "1.1.0"
+
+[dependencies]
+python = "==3.13"
+snakemake = ">=9,<10"
+
+[pypi-dependencies.netzoopy-stoat]
+git = "https://github.com/ladislav-hovan/stoat.git"
+branch = "refactoring"

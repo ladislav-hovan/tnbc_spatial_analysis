@@ -9,6 +9,5 @@ version = "0.0.1"
 python = "==3.13"
 snakemake = ">=9,<10"
 
-[pypi-dependencies.netzoopy-stoat]
-git = "https://github.com/ladislav-hovan/stoat.git"
-branch = "refactoring"
+[pypi-dependencies]
+netzoopy-stoat = { git = "https://github.com/ladislav-hovan/stoat.git" }

@@ -1,2 +1,32 @@
+### Imports ###
+from os.path import join
+from pandas import read_table
+
 ### Config file ###
 configfile: join('config', 'config.yaml')
+
+### Setup ###
+global_resources = workflow.global_resources
+
+USE_GPU = ('gpus' in global_resources) and (global_resources['gpus'] > 0)
+
+### Input and output variables ###
+include: join('rules', 'variables.smk')
+
+### Targets ###
+sample_df = read_table(join(config['resources'], 'samples_list.tsv'))
+
+COUNTS_FEATHER = expand(join('<results>', 'converted_feather', '{patient_id}',
+    'counts.feather'), patient_id=sample_df['patient'].unique())
+SPOTS_FEATHER = expand(join('<results>', 'converted_feather', '{patient_id}',
+    'spots.feather'), patient_id=sample_df['patient'].unique())
+
+### Rules ###
+rule all:
+    input:
+        COUNTS_FEATHER,
+        SPOTS_FEATHER,
+    default_target:
+        True
+
+include: join('rules', 'preprocessing.smk')

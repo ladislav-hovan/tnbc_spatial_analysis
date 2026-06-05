@@ -1,1 +1,8 @@
-input_dir: "resources/"
+resources: &RSRC "resources"
+results: &RSLT "results"
+pathvars:
+  resources: *RSRC
+  results: *RSLT
+  counts: "<resources>/raw_counts"
+  priors: "<resources>/priors"
+  scripts: "workflow/scripts"

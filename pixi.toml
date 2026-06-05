@@ -6,7 +6,10 @@ platforms = ["linux-64"]
 version = "0.0.1"
 
 [dependencies]
-python = "==3.13"
+pandas = ">=2.3.0,<3"
+python = ">=3.13.0,<3.14"
+r-arrow = ">=23,<25"
+r-base = ">=4.5.0,<4.6"
 snakemake = ">=9,<10"
 
 [pypi-dependencies]

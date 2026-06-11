@@ -7,7 +7,7 @@ version = "0.0.1"
 
 [dependencies]
 pandas = ">=2.3.0,<3"
-python = ">=3.13.0,<3.14"
+r-argparse = ">=2.2.0,<3"
 r-arrow = ">=23,<25"
 r-base = ">=4.5.0,<4.6"
 snakemake = ">=9,<10"

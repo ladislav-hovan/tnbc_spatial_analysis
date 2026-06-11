@@ -1,32 +1,32 @@
 rule convert_count_format:
     input:
         script = join('<scripts>', 'convert_count_format.R'),
-        file = join('<counts>', 'TNBC{patient_id}.RDS'),
+        file = INPUT_RDS,
     output:
-        counts = join('<results>', 'converted_feather', '{patient_id}',
-            'counts.feather'),
-        spots = join('<results>', 'converted_feather', '{patient_id}',
-            'spots.feather'),
+        counts = CONVERTED_COUNTS,
+        spots = CONVERTED_SPOTS,
     shell:
         """
         {input.script} \
-        {input.file} \
-        {output.counts} \
-        {output.spots}
+        -i {input.file} \
+        -oc {output.counts} \
+        -os {output.spots}
         """
 
-# rule convert_feather_to_zarr:
-#     input:
-#         script = join('<scripts>', 'convert_count_format.R'),
-#         counts = join('<results>', 'converted_feather', '{patient_id}',
-#             'counts.feather'),
-#         spots = join('<results>', 'converted_feather', '{patient_id}',
-#             'spots.feather'),
-#     output:
-
-#     shell:
-#         """
-#         {input.script} \
-#         -ic {input.counts} \
-#         -is {input.spots} \
-#         """
+rule convert_feather_to_zarr:
+    input:
+        script = join('<scripts>', 'convert_feather_to_zarr.py'),
+        counts = CONVERTED_COUNTS,
+        spots = CONVERTED_SPOTS,
+    output:
+        zarr = CONVERTED_ZARR,
+    params:
+        zarr_dir = subpath(output.zarr, parent=True),
+    shell:
+        """
+        {input.script} \
+        -c {input.counts} \
+        -s {input.spots} \
+        -sl {wildcards.slide} \
+        -od {params.zarr_dir}
+        """

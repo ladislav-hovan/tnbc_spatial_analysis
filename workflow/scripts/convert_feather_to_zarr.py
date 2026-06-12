@@ -1,14 +1,78 @@
 #!/usr/bin/env python
 
 ### Imports ###
+import anndata as ad
+import numpy as np
 import pandas as pd
 
-from anndata import AnnData
 from os.path import join
 from pathlib import Path
+from scipy.sparse import csr_matrix
 from spatialdata import SpatialData
 
 ### Functions ###
+def add_missing_spots(
+    spatial_table: ad.AnnData,
+) -> ad.AnnData:
+    """
+    Adds missing spots within range of present spots to the AnnData
+    object provided, also performs other transformations (reordering,
+    removing NaNs and converting to sparse format).
+
+    Parameters
+    ----------
+    spatial_table : ad.AnnData
+        Table containing the spatial information
+
+    Returns
+    -------
+    ad.AnnData
+        Adjusted table following the modifications
+    """
+
+    # Determine the current range of observations
+    obs = spatial_table.obs
+    row_range = (obs['array_row'].min(), obs['array_row'].max())
+    col_range = (obs['array_col'].min(), obs['array_col'].max())
+    index = []
+    data = {'array_row': [], 'array_col': []}
+    # Iterate over all combinations within range
+    for r in range(row_range[0], row_range[1] + 1):
+        for c in range(col_range[0], col_range[1] + 1):
+            # Only valid combinations are even + even or odd + odd
+            if r % 2 != c % 2:
+                continue
+            label = f'{r}x{c}'
+            # Skip if already present
+            if label in obs.index:
+                continue
+            index.append(label)
+            data['array_row'].append(r)
+            data['array_col'].append(c)
+    # Create the rudimentary data frame with the extra spots
+    df = pd.DataFrame(data, index=index)
+    # These spots are not in tissue
+    df['in_tissue'] = False
+    # Convert to AnnData
+    adata = ad.AnnData(pd.DataFrame(index=index,
+        columns=spatial_table.var_names), obs=df)
+    # Join with the provided object
+    spatial_table = ad.concat((spatial_table, adata), join='outer')
+    # Fill in the slide name for the new spots
+    slide = spatial_table.obs.iloc[0]['slide']
+    spatial_table.obs['slide'] = spatial_table.obs['slide'].fillna(slide)
+    # Convert to sparse matrix
+    spatial_table.X = spatial_table.X.astype(float)
+    spatial_table.X[np.isnan(spatial_table.X)] = 0.0
+    spatial_table.X = csr_matrix(spatial_table.X)
+    # Sort the index properly
+    sorted_index = sorted(spatial_table.obs_names, key=lambda x: [
+        int(y) for y in x.split('x')])
+    spatial_table = spatial_table[sorted_index, :]
+
+    return spatial_table
+
+
 def convert_feather_to_zarr(
     counts_path: Path,
     spots_path: Path,
@@ -44,12 +108,16 @@ def convert_feather_to_zarr(
     # Change the spots index to use only the last part
     f_spots.index = [x.split('.')[-1] for x in f_spots.index]
     # Create an AnnData object using the two DataFrames
-    adata = AnnData(f_counts, obs=f_spots)
+    adata = ad.AnnData(f_counts, obs=f_spots)
     adata.obs.drop(['new_x', 'new_y'], axis=1, inplace=True)
     adata.obs.rename(
-        columns={'x': 'index_row', 'y': 'index_col'},
+        columns={'x': 'array_row', 'y': 'array_col'},
         inplace=True,
     )
+    # Only spots with tissue are present
+    adata.obs['in_tissue'] = True
+    # Add the missing ones without tissue
+    adata = add_missing_spots(adata)
     # Create a SpatialData object with AnnData as the table
     spatial = SpatialData()
     spatial.tables['table'] = adata

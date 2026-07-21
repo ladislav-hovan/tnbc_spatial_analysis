@@ -30,3 +30,42 @@ rule convert_feather_to_zarr:
         -sl {wildcards.slide} \
         -od {params.zarr_dir}
         """
+
+rule calculate_qc_metrics:
+    input:
+        script = join('<scripts>', 'calculate_qc_metrics.py'),
+        zarr = CONVERTED_ZARR,
+    output:
+        qc_plot = QC_PLOT,
+        joint_qc_plot = JOINT_QC_PLOT,
+        data = QC_DATA,
+    shell:
+        """
+        {input.script} \
+        -i {input.zarr} \
+        -qc {output.qc_plot} \
+        -jqc {output.joint_qc_plot} \
+        -d {output.data}
+        """
+
+sample_df = read_table(join(config['resources'], 'samples_list.tsv'))
+
+rule collate_qc_data:
+    input:
+        script = join('<scripts>', 'collate_qc_data.py'),
+        qc_data = expand(
+            QC_DATA,
+            zip,
+            patient_id=sample_df['patient'],
+            slide=sample_df['slide'],
+        ),
+    output:
+        collated = COLLATED_QC_DATA,
+    shell:
+        """
+        {input.script} \
+        -qc {input.qc_data} \
+        -o {output.collated}
+        """
+
+# rule select_best_slides:

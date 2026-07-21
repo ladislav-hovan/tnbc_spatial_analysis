@@ -14,19 +14,12 @@ USE_GPU = ('gpus' in global_resources) and (global_resources['gpus'] > 0)
 include: join('rules', 'variables.smk')
 
 ### Targets ###
-sample_df = read_table(join(config['resources'], 'samples_list.tsv'))
-
-ALL_SLIDES_ZARR = expand(
-    join('<results>', 'converted_zarr', '{patient_id}', '{slide}.zarr'),
-    zip,
-    patient_id=sample_df['patient'],
-    slide=sample_df['slide'],
-)
+# Currently none that are not defined in variables
 
 ### Rules ###
 rule all:
     input:
-        ALL_SLIDES_ZARR,
+        COLLATED_QC_DATA,
     default_target:
         True
 

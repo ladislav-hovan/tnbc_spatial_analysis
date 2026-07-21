@@ -19,7 +19,7 @@ rule convert_feather_to_zarr:
         counts = CONVERTED_COUNTS,
         spots = CONVERTED_SPOTS,
     output:
-        zarr = CONVERTED_ZARR,
+        zarr = directory(CONVERTED_ZARR),
     params:
         zarr_dir = subpath(output.zarr, parent=True),
     shell:
@@ -38,7 +38,7 @@ rule calculate_qc_metrics:
     output:
         qc_plot = QC_PLOT,
         joint_qc_plot = JOINT_QC_PLOT,
-        data = QC_DATA,
+        data = temp(QC_DATA),
     shell:
         """
         {input.script} \

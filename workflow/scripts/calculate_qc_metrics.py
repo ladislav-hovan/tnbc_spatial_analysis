@@ -32,6 +32,9 @@ def calculate_qc_metrics(
     # Load the Stoat object from zarr
     stoat_obj = Stoat()
     stoat_obj.load_zarr(zarr_path)
+    # We are only interested in spots with tissue
+    st = stoat_obj.spatial[stoat_obj.table]
+    st._inplace_subset_obs(st.obs['in_tissue'])
     # Calculate the QC metrics and save the plots
     stoat_obj.calculate_qc_metrics()
     fig,ax = stoat_obj.plot_qc_metrics()

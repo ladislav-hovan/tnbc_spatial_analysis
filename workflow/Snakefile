@@ -19,7 +19,7 @@ include: join('rules', 'variables.smk')
 ### Rules ###
 rule all:
     input:
-        COLLATED_QC_DATA,
+        BEST_SLIDES,
     default_target:
         True
 

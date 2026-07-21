@@ -13,3 +13,4 @@ JOINT_QC_PLOT = join('<results>', 'qc', '{patient_id}', '{slide}',
     'joint_qc_plot.png')
 QC_DATA = join('<results>', 'qc', '{patient_id}', '{slide}', 'data.tsv')
 COLLATED_QC_DATA = join('<results>', 'qc', 'collated_data.tsv')
+BEST_SLIDES = join('<results>', 'qc', 'best_slides.tsv')

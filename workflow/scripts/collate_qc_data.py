@@ -35,7 +35,7 @@ if __name__ == '__main__':
         help='files with the qc data', action='extend', nargs='+',
         metavar='FILE')
     parser.add_argument('-o', '--output', dest='output',
-        help='file to save the collated data into', metavar='ZARR')
+        help='file to save the collated data into', metavar='FILE')
 
     args = parser.parse_args()
 

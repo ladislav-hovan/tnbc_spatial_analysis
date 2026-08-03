@@ -6,3 +6,5 @@ pathvars:
   counts: "<resources>/raw_counts"
   priors: "<resources>/priors"
   scripts: "workflow/scripts"
+slide_selection: "best_genes_median"
+gpu_ids: [ 1 ]

@@ -3,10 +3,12 @@ authors = ["Ladislav Hovan <ladislav.hovan@ncmbm.uio.no>"]
 channels = ["conda-forge", "netzoo", "bioconda"]
 name = "tnbc_analysis_pipeline"
 platforms = ["linux-64"]
-version = "0.0.1"
+version = "0.0.2"
 
 [dependencies]
+numpy = ">=2.2.0,<2.5"
 pandas = ">=2.3.0,<3"
+pytools = ">=2026.1.1,<2027"
 r-argparse = ">=2.2.0,<3"
 r-arrow = ">=23,<25"
 r-base = ">=4.5.0,<4.6"
@@ -14,3 +16,12 @@ snakemake = ">=9,<10"
 
 [pypi-dependencies]
 netzoopy-stoat = { git = "https://github.com/ladislav-hovan/stoat.git" }
+
+[environments]
+tnbc-smk-gpu = ["tnbc-smk-gpu"]
+
+[feature.tnbc-smk-gpu.pypi-dependencies]
+cupy-cuda12x = ">=12.0.0"
+
+[feature.tnbc-smk-gpu.tasks]
+gpu-snakemake = "snakemake"

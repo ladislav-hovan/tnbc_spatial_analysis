@@ -68,7 +68,7 @@ rule collate_qc_data:
         -o {output.collated}
         """
 
-rule select_best_slides:
+checkpoint select_best_slides:
     input:
         script = join('<scripts>', 'select_best_slides.py'),
         qc = COLLATED_QC_DATA,

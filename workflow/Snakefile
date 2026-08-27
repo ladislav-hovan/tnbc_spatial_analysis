@@ -11,6 +11,10 @@ global_resources = workflow.global_resources
 if 'gpus' in global_resources and global_resources['gpus'].value > 0:
     from lib.gpu_manager import GpuManager
 
+    assert global_resources['gpus'] == len(config['gpu_ids']), (
+            'The number of GPUs in resources must match '
+            'the length of provided GPU IDs')
+
     gpu_manager = GpuManager(config['gpu_ids'])
 
     USE_GPU = True
@@ -25,16 +29,60 @@ def get_network_targets(wc):
     with checkpoints.select_best_slides.get().output['mapping'].open() as f:
         df = read_table(f)
         return expand(
-            SPOT_INDEGREES,
-            zip,
-            patient_id=df['patient_id'][:10],
-            slide=df[config['slide_selection']][:10],
+            expand(
+                SPOT_INDEGREES_ALT,
+                zip,
+                patient_id=df['patient_id'],
+                slide=df[config['slide_selection']],
+            ),
+            min_counts=config['min_counts_per_spot'],
         )
+
+# def get_agg_expression_targets(wc):
+#     with checkpoints.select_best_slides.get().output['mapping'].open() as f:
+#         df = read_table(f)
+#         return expand(
+#             expand(
+#                 CLUSTERED_AGG_EXPRESSION_ALT,
+#                 zip,
+#                 patient_id=df['patient_id'],
+#                 slide=df[config['slide_selection']],
+#             ),
+#             min_counts=config['min_counts_per_spot'],
+#             resolution=config['clustering_resolutions'],
+#         )
+
+# def get_collated_agg_expression_target(wc):
+#     return expand(
+#         COLLATED_CLUSTERED_AGG_EXPRESSION,
+#         min_counts=config['min_counts_per_spot'],
+#         resolution=config['clustering_resolutions'],
+#     )
+
+def get_fn_collated_agg_expression_target(wc):
+    return expand(
+        FN_COLLATED_CLUSTERED_AGG_EXPRESSION,
+        min_counts=config['min_counts_per_spot'],
+        resolution=config['clustering_resolutions'],
+        ratio_threshold=config['filter_ratio_threshold'],
+    )
+
+def get_region_network_targets(wc):
+    return expand(
+        REGION_INDEGREES,
+        min_counts=config['min_counts_per_spot'],
+        resolution=config['clustering_resolutions'],
+        ratio_threshold=config['filter_ratio_threshold'],
+    )
 
 ### Rules ###
 rule all:
     input:
-        get_network_targets,
+        # get_network_targets,
+        # get_agg_expression_targets,
+        # get_collated_agg_expression_target,
+        get_fn_collated_agg_expression_target,
+        get_region_network_targets,
     default_target:
         True
 

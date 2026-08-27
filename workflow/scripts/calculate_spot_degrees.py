@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 ### Imports ###
-from os import rmdir
 from os.path import join
 from pathlib import Path
+from shutil import rmtree
 from stoat import Stoat
 from stoat.modules.analysis import collate_degrees
 from stoat.modules.utils import weigh_by_distance_and_correlation
@@ -18,16 +18,37 @@ def execute_stoat_workflow(
     ppi_prior: Path,
     indegrees: Path,
     outdegrees: Path,
+    min_counts_per_spot: float = 0.0,
     computing: Literal['cpu', 'gpu'] = 'cpu',
 ) -> None:
+    """
+    
 
-    # Loading
+    Parameters
+    ----------
+    zarr_path : Path
+        _description_
+    motif_prior : Path
+        _description_
+    ppi_prior : Path
+        _description_
+    indegrees : Path
+        _description_
+    outdegrees : Path
+        _description_
+    min_counts_per_spot : float, optional
+        _description_, by default 0.0
+    computing : Literal['cpu', 'gpu'], optional
+        _description_, by default 'cpu'
+    """
+
+    # Loading zarr
     stoat_obj = Stoat()
     stoat_obj.load_zarr(zarr_path)
-    # Filtering
+    # Filtering genes and spots
     stoat_obj.filter_genes(drop_deprecated=True, min_counts=1)
-    # stoat_obj.filter_spots(min_counts=1000)
-    # Averaging
+    stoat_obj.filter_spots(min_counts=min_counts_per_spot)
+    # Averaging expression
     stoat_obj.average_expression(
         avg_function=weigh_by_distance_and_correlation,
         kernel='gaussian',
@@ -41,6 +62,7 @@ def execute_stoat_workflow(
         motif_prior=motif_prior,
         ppi_prior=ppi_prior,
         computing=computing,
+        modeProcess='intersection',
         save_stoat=False,
         save_degrees=True,
         overwrite_old=True,
@@ -59,7 +81,7 @@ def execute_stoat_workflow(
         col_name='Outdegrees',
     )
     # Remove the temporary directory
-    rmdir(output_dir)
+    rmtree(output_dir)
 
 
 def calculate_spot_degrees(
@@ -68,18 +90,41 @@ def calculate_spot_degrees(
     ppi_prior: Path,
     indegrees: Path,
     outdegrees: Path,
+    min_counts_per_spot: float = 0.0,
     computing: Literal['cpu', 'gpu'] = 'cpu',
 ) -> None:
+    """
+    
+
+    Parameters
+    ----------
+    zarr_path : Path
+        _description_
+    motif_prior : Path
+        _description_
+    ppi_prior : Path
+        _description_
+    indegrees : Path
+        _description_
+    outdegrees : Path
+        _description_
+    min_counts_per_spot : float, optional
+        _description_, by default 0.0
+    computing : Literal['cpu', 'gpu'], optional
+        _description_, by default 'cpu'
+    """
 
     def run_workflow(
         computing: Literal['cpu', 'gpu'] = 'cpu',
     ) -> None:
+
         execute_stoat_workflow(
             zarr_path=zarr_path,
             motif_prior=motif_prior,
             ppi_prior=ppi_prior,
             indegrees=indegrees,
             outdegrees=outdegrees,
+            min_counts_per_spot=min_counts_per_spot,
             computing=computing,
         )
 
@@ -108,6 +153,9 @@ if __name__ == '__main__':
         help='path to save the indegrees into', metavar='FILE')
     parser.add_argument('-od', '--outdegrees', dest='outdegrees',
         help='path to save the outdegrees into', metavar='FILE')
+    parser.add_argument('-mc', '--min_counts', dest='min_counts',
+        help='minimum number of counts for a spot to be kept',
+        type=float, default=0.0)
     parser.add_argument('-c', '--computing', dest='computing',
         help='platform to use to calculate networks (cpu or gpu)',)
 
@@ -115,7 +163,10 @@ if __name__ == '__main__':
 
     calculate_spot_degrees(
         zarr_path=args.input,
+        motif_prior=args.motif_prior,
+        ppi_prior=args.ppi_prior,
         indegrees=args.indegrees,
         outdegrees=args.outdegrees,
+        min_counts_per_spot=args.min_counts,
         computing=args.computing,
     )

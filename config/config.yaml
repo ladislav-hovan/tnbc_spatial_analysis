@@ -7,4 +7,8 @@ pathvars:
   priors: "<resources>/priors"
   scripts: "workflow/scripts"
 slide_selection: "best_genes_median"
-gpu_ids: [ 1 ]
+min_counts_per_spot: [ 0 ]
+gpu_ids: [ 3 ]
+clustering_resolutions: [ 1.0 ]
+filter_ratio_threshold: [ 0.1 ]
+lioness_threads: 8

@@ -8,6 +8,7 @@ import pandas as pd
 from os.path import join
 from pathlib import Path
 from scipy.sparse import csr_matrix
+from sklearn.linear_model import LinearRegression
 from spatialdata import SpatialData
 
 ### Functions ###
@@ -53,6 +54,13 @@ def add_missing_spots(
     df = pd.DataFrame(data, index=index)
     # These spots are not in tissue
     df['in_tissue'] = False
+    # Train the relationship of row/col to pixels and predict missing values
+    X_train = obs[['array_row', 'array_col']]
+    for dim in ['pixel_x', 'pixel_y']:
+        model = LinearRegression()
+        model.fit(X_train, obs[dim])
+        predicted = model.predict(df[['array_row', 'array_col']])
+        df[dim] = pd.Series(predicted, index=df.index)
     # Convert to AnnData
     adata = ad.AnnData(pd.DataFrame(index=index,
         columns=spatial_table.var_names), obs=df)
@@ -69,6 +77,12 @@ def add_missing_spots(
     sorted_index = sorted(spatial_table.obs_names, key=lambda x: [
         int(y) for y in x.split('x')])
     spatial_table = spatial_table[sorted_index, :]
+    # Move the pixels to obsm table
+    # Transform them for proper neighbour calculations
+    spatial_table.obsm['spatial'] = np.zeros((spatial_table.n_obs, 2))
+    spatial_table.obsm['spatial'][:, 1] = spatial_table.obs['pixel_x'].values
+    spatial_table.obsm['spatial'][:, 0] = -((2 * np.sin(np.radians(60)) / 3) *
+        spatial_table.obs['pixel_y'].values)
 
     return spatial_table
 

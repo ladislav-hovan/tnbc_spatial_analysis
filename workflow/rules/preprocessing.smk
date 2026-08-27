@@ -80,3 +80,62 @@ checkpoint select_best_slides:
         -i {input.qc} \
         -o {output.mapping}
         """
+
+rule cluster_and_aggregate_expression:
+    input:
+        script = join('<scripts>', 'cluster_and_aggregate_expression.py'),
+        zarr = CONVERTED_ZARR,
+    output:
+        aggregated_expression = CLUSTERED_AGG_EXPRESSION,
+        classification = CLUSTERED_CLASSIFICATION,
+    params:
+        min_counts_per_spot = lambda wildcards: wildcards['min_counts'],
+        resolution = lambda wildcards: wildcards['resolution'],
+    shell:
+        """
+        {input.script} \
+        -i {input.zarr} \
+        -mc {params.min_counts_per_spot} \
+        -r {params.resolution} \
+        -cp {output.classification} \
+        -ep {output.aggregated_expression}
+        """
+
+def get_selected_expr_data(wc):
+    with checkpoints.select_best_slides.get().output['mapping'].open() as f:
+        df = read_table(f)
+        return expand(
+            CLUSTERED_AGG_EXPRESSION_ALT,
+            zip,
+            patient_id=df['patient_id'],
+            slide=df[config['slide_selection']],
+        )
+
+rule collate_agg_expression_data:
+    input:
+        script = join('<scripts>', 'collate_agg_expression_data.py'),
+        agg_expr_files = get_selected_expr_data,
+    output:
+        collated = COLLATED_CLUSTERED_AGG_EXPRESSION,
+    shell:
+        """
+        {input.script} \
+        -ef {input.agg_expr_files} \
+        -o {output.collated}
+        """
+
+rule filter_and_normalise_expression:
+    input:
+        script = join('<scripts>', 'filter_and_normalise_expression.py'),
+        collated_expr = COLLATED_CLUSTERED_AGG_EXPRESSION,
+    output:
+        filtered_expr = FN_COLLATED_CLUSTERED_AGG_EXPRESSION,
+    params:
+        ratio_threshold = lambda wildcards: wildcards['ratio_threshold'],
+    shell:
+        """
+        {input.script} \
+        -i {input.collated_expr} \
+        -o {output.filtered_expr} \
+        -rt {params.ratio_threshold}
+        """

@@ -9,6 +9,15 @@ convert_count_format <- function(
     output_counts,
     output_spots
 ) {
+    #' Conversion from RDS to feather
+    #'
+    #' @description Converts the spatial count data from RDS format to
+    #' two feather files - one with counts, one with spots.
+    #'
+    #' @param rds_path Path to the RDS file
+    #' @param output_counts Path to save the counts data into
+    #' @param output_spots Path to save the spots data into
+
     data <- readRDS(rds_path)
     counts <- data$cnts
     spots <- data$spots

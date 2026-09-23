@@ -1,0 +1,5 @@
+gsea:
+  genefile: {genefile} # Path to file (.rnk format, which is two columns, tab delimited, no header) containing the genes and test statistics to do enrichment on
+  gmtfile: {gmtfile} # Path to the gene set file in gmt format
+  geneset: {geneset_name} # The gene set type used for gmtfile
+  outdir: {output_dir} # The directory to save the output to

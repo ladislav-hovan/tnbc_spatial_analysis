@@ -51,3 +51,37 @@ rule calculate_region_degrees:
         -id {output.indegrees} \
         -od {output.outdegrees}
         """
+
+rule calculate_annotated_region_degrees:
+    input:
+        script = join('<scripts>', 'calculate_region_degrees.py'),
+        expression = FN_COLLATED_ANNOTATED_AGG_EXPRESSION,
+        motif_prior = MOTIF_PRIOR,
+        ppi_prior = PPI_PRIOR,
+    output:
+        indegrees = ANNOTATED_REGION_INDEGREES,
+        outdegrees = ANNOTATED_REGION_OUTDEGREES,
+    resources:
+        gpus = int(USE_GPU),
+        threads = 1 if USE_GPU else config['lioness_threads'],
+    shell:
+        """
+        {input.script} \
+        -e {input.expression} \
+        -mp {input.motif_prior} \
+        -pp {input.ppi_prior} \
+        -c {compute} \
+        -t {resources.threads} \
+        -id {output.indegrees} \
+        -od {output.outdegrees}
+        """
+
+rule copy_aggregated_expression:
+    input:
+        expression = ANY_AGG_EXPRESSION,
+    output:
+        expression = ANY_REGION_EXPRESSION,
+    shell:
+        """
+        cp {input.expression} {output.expression}
+        """

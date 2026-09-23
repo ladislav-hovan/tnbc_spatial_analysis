@@ -1,0 +1,19 @@
+Analysis directory: /fp/projects01/ec31/kuijjer-group/ladislav/projects/stoat/tnbc_pipeline 
+SiSaNA version: 1.8.1 
+netZooPy version: 0.10.9 
+
+Parameters used:
+  color: viridis
+  outdir: results/limma/min_0_counts/ratio_threshold_0.1/Patient+Slide/Classification/Stroma_Tumor/expression/gsea/Biological_process
+  genefile: results/limma/min_0_counts/ratio_threshold_0.1/Patient+Slide/Classification/Stroma_Tumor/expression/comparison.rnk
+  gmtfile: resources/gene_sets/c5.go.bp.v2025.1.Hs.symbols.gmt
+  geneset: Biological_process
+
+Files generated:
+  - results/limma/min_0_counts/ratio_threshold_0.1/Patient+Slide/Classification/Stroma_Tumor/expression/gsea/Biological_process/comparison_prerank_GSEA_Biological_process_results.txt
+  - results/limma/min_0_counts/ratio_threshold_0.1/Patient+Slide/Classification/Stroma_Tumor/expression/gsea/Biological_process/comparison_GSEA_Biological_process_basic_enrichment_plot.png
+  - results/limma/min_0_counts/ratio_threshold_0.1/Patient+Slide/Classification/Stroma_Tumor/expression/gsea/Biological_process/comparison_GSEA_Biological_process_basic_enrichment_plot.pdf
+  - results/limma/min_0_counts/ratio_threshold_0.1/Patient+Slide/Classification/Stroma_Tumor/expression/gsea/Biological_process/comparison_GSEA_Biological_process_basic_enrichment_dotplot.png
+  - results/limma/min_0_counts/ratio_threshold_0.1/Patient+Slide/Classification/Stroma_Tumor/expression/gsea/Biological_process/comparison_GSEA_Biological_process_basic_enrichment_dotplot.pdf
+
+Additional information:

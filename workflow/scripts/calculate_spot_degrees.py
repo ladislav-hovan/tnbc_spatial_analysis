@@ -22,24 +22,26 @@ def execute_stoat_workflow(
     computing: Literal['cpu', 'gpu'] = 'cpu',
 ) -> None:
     """
-    
+    Executes the STOAT workflow to calculate indegrees and outdegrees
+    for spots in a spatial transcriptomics dataset and collates the
+    results into the specified output files.
 
     Parameters
     ----------
     zarr_path : Path
-        _description_
+        Path to the zarr input
     motif_prior : Path
-        _description_
+        Path to the motif prior file
     ppi_prior : Path
-        _description_
+        Path to the PPI prior file
     indegrees : Path
-        _description_
+        Path to save the indegrees into
     outdegrees : Path
-        _description_
+        Path to save the outdegrees into
     min_counts_per_spot : float, optional
-        _description_, by default 0.0
+        Minimum number of counts for a spot to be kept, by default 0.0
     computing : Literal['cpu', 'gpu'], optional
-        _description_, by default 'cpu'
+        Whether to use CPU or GPU computation, by default 'cpu'
     """
 
     # Loading zarr
@@ -94,29 +96,39 @@ def calculate_spot_degrees(
     computing: Literal['cpu', 'gpu'] = 'cpu',
 ) -> None:
     """
-    
+    Calculates the indegrees and outdegrees of the gene regulatory
+    networks from the given spatial transcriptomics data and priors.
+    Uses the STOAT algorithm to reconstruct the networks.
 
     Parameters
     ----------
     zarr_path : Path
-        _description_
+        Path to the zarr input
     motif_prior : Path
-        _description_
+        Path to the motif prior file
     ppi_prior : Path
-        _description_
+        Path to the PPI prior file
     indegrees : Path
-        _description_
+        Path to save the indegrees into
     outdegrees : Path
-        _description_
+        Path to save the outdegrees into
     min_counts_per_spot : float, optional
-        _description_, by default 0.0
+        Minimum number of counts for a spot to be kept, by default 0.0
     computing : Literal['cpu', 'gpu'], optional
-        _description_, by default 'cpu'
+        Whether to use CPU or GPU computation, by default 'cpu'
     """
 
     def run_workflow(
         computing: Literal['cpu', 'gpu'] = 'cpu',
     ) -> None:
+        """
+        Runs the STOT workflow with the given parameters.
+
+        Parameters
+        ----------
+        computing : Literal['cpu', 'gpu'], optional
+            Whether to use CPU or GPU computation, by default 'cpu'
+        """
 
         execute_stoat_workflow(
             zarr_path=zarr_path,
@@ -131,6 +143,7 @@ def calculate_spot_degrees(
     if computing == 'gpu':
         gpu_manager = GpuManager()
         with allocate_gpus(gpu_manager, 1) as gpu_id:
+            # Only try to import CUDA if we are using GPU computation
             from cupy.cuda import Device
 
             with Device(gpu_id[0]):

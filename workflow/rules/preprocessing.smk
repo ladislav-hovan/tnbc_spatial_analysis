@@ -121,7 +121,9 @@ rule collate_agg_expression_data:
         """
         {input.script} \
         -ef {input.agg_expr_files} \
-        -o {output.collated}
+        -o {output.collated} \
+        -pi -3 \
+        -si -2
         """
 
 rule filter_and_normalise_expression:
@@ -138,4 +140,76 @@ rule filter_and_normalise_expression:
         -i {input.collated_expr} \
         -o {output.filtered_expr} \
         -rt {params.ratio_threshold}
+        """
+
+rule annotate_and_aggregate_expression:
+    input:
+        script = join('<scripts>', 'annotate_and_aggregate_expression.py'),
+        zarr = CONVERTED_ZARR,
+        classification = ANNOTATED_CLASSIFICATION,
+    output:
+        aggregated_expression = ANNOTATED_AGG_EXPRESSION,
+    params:
+        min_counts_per_spot = lambda wildcards: wildcards['min_counts'],
+    shell:
+        """
+        {input.script} \
+        -i {input.zarr} \
+        -mc {params.min_counts_per_spot} \
+        -cp {input.classification} \
+        -ep {output.aggregated_expression}
+        """
+
+def get_selected_annotated_expr_data(wc):
+    with checkpoints.select_best_slides.get().output['mapping'].open() as f:
+        df = read_table(f)
+        return expand(
+            ANNOTATED_AGG_EXPRESSION_ALT,
+            zip,
+            patient_id=df['patient_id'],
+            slide=df[config['slide_selection']],
+        )
+
+rule collate_agg_annotated_expression_data:
+    input:
+        script = join('<scripts>', 'collate_agg_expression_data.py'),
+        agg_expr_files = get_selected_annotated_expr_data,
+    output:
+        collated = COLLATED_ANNOTATED_AGG_EXPRESSION,
+    shell:
+        """
+        {input.script} \
+        -ef {input.agg_expr_files} \
+        -o {output.collated} \
+        -pi -3 \
+        -si -2
+        """
+
+rule filter_and_normalise_annotated_expression:
+    input:
+        script = join('<scripts>', 'filter_and_normalise_expression.py'),
+        collated_expr = COLLATED_ANNOTATED_AGG_EXPRESSION,
+    output:
+        filtered_expr = FN_COLLATED_ANNOTATED_AGG_EXPRESSION,
+    params:
+        ratio_threshold = lambda wildcards: wildcards['ratio_threshold'],
+    shell:
+        """
+        {input.script} \
+        -i {input.collated_expr} \
+        -o {output.filtered_expr} \
+        -rt {params.ratio_threshold}
+        """
+
+rule create_region_metadata:
+    input:
+        script = join('<scripts>', 'create_region_metadata.py'),
+        expression = FN_COLLATED_ANNOTATED_AGG_EXPRESSION,
+    output:
+        metadata = METADATA_FILE,
+    shell:
+        """
+        {input.script} \
+        -e {input.expression} \
+        -m {output.metadata}
         """

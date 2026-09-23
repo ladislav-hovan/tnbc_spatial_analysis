@@ -24,11 +24,32 @@ def execute_lioness_workflow(
     computing: Literal['cpu', 'gpu'] = 'cpu',
     threads: int = 1,
 ) -> None:
-    
+    """
+    Executes the LIONESS workflow to reconstruct gene regulatory
+    networks and calculates indegrees and outdegrees afterwards.
+
+    Parameters
+    ----------
+    expression_path : Path
+        Path to the expression data file
+    motif_prior : Path
+        Path to the motif prior file
+    ppi_prior : Path
+        Path to the PPI prior file
+    indegrees : Path
+        Path to save the indegrees into
+    outdegrees : Path
+        Path to save the outdegrees into
+    computing : Literal['cpu', 'gpu'], optional
+        Whether to use CPU or GPU computation, by default 'cpu'
+    threads : int, optional
+        Number of threads to use for CPU computation, by default 1
+    """
+
     output_dir = split(indegrees)[0]
     # Run LIONESS
     expr_df = pd.read_feather(expression_path).set_index('index')
-    panda_obj = Panda(expr_df.T, motif_prior, ppi_prior,
+    panda_obj = Panda(expr_df, motif_prior, ppi_prior,
         computing=computing, save_memory=False, keep_expression_matrix=True,
         modeProcess='intersection')
     _ = Lioness(panda_obj, computing=computing, save_dir=output_dir,
@@ -62,11 +83,43 @@ def calculate_region_degrees(
     computing: Literal['cpu', 'gpu'] = 'cpu',
     threads: int = 1,
 ) -> None:
+    """
+    Calculates the indegrees and outdegrees of the gene regulatory
+    networks from the given expression data and priors. Uses the
+    LIONESS algorithm to reconstruct the networks.
+
+    Parameters
+    ----------
+    expression_path : Path
+        Path to the expression data file
+    motif_prior : Path
+        Path to the motif prior file
+    ppi_prior : Path
+        Path to the PPI prior file
+    indegrees : Path
+        Path to save the indegrees into
+    outdegrees : Path
+        Path to save the outdegrees into
+    computing : Literal['cpu', 'gpu'], optional
+        Whether to use CPU or GPU computation, by default 'cpu'
+    threads : int, optional
+        Number of threads to use for CPU computation, by default 1
+    """
 
     def run_workflow(
         computing: Literal['cpu', 'gpu'] = 'cpu',
         threads: int = 1,
     ) -> None:
+        """
+        Runs the LIONESS workflow with the given parameters.
+
+        Parameters
+        ----------
+        computing : Literal['cpu', 'gpu'], optional
+            Whether to use CPU or GPU computation, by default 'cpu'
+        threads : int, optional
+            Number of threads to use for CPU computation, by default 1
+        """
 
         execute_lioness_workflow(
             expression_path=expression_path,
@@ -81,6 +134,7 @@ def calculate_region_degrees(
     if computing == 'gpu':
         gpu_manager = GpuManager()
         with allocate_gpus(gpu_manager, 1) as gpu_id:
+            # Only try to import CUDA if we are using GPU computation
             from cupy.cuda import Device
 
             with Device(gpu_id[0]):

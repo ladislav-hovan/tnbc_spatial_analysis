@@ -25,66 +25,35 @@ else:
 include: join('rules', 'variables.smk')
 
 ### Targets ###
-def get_network_targets(wc):
-    with checkpoints.select_best_slides.get().output['mapping'].open() as f:
-        df = read_table(f)
-        return expand(
-            expand(
-                SPOT_INDEGREES_ALT,
-                zip,
-                patient_id=df['patient_id'],
-                slide=df[config['slide_selection']],
-            ),
-            min_counts=config['min_counts_per_spot'],
-        )
+# The order is: combination to be used for pairing, column, groupA, groupB
+# If you want to constrain a different column to a value (subset the samples),
+# you can specify the column as 'column1=value__column2'
+LIMMA_COMBINATIONS = [
+    join('{0}', '{1}', '{2}_{3}').format(*combs) for combs in
+    [
+        ['Patient+Slide', 'Classification', 'Stroma', 'Tumor'],
+    ]
+]
 
-# def get_agg_expression_targets(wc):
-#     with checkpoints.select_best_slides.get().output['mapping'].open() as f:
-#         df = read_table(f)
-#         return expand(
-#             expand(
-#                 CLUSTERED_AGG_EXPRESSION_ALT,
-#                 zip,
-#                 patient_id=df['patient_id'],
-#                 slide=df[config['slide_selection']],
-#             ),
-#             min_counts=config['min_counts_per_spot'],
-#             resolution=config['clustering_resolutions'],
-#         )
-
-# def get_collated_agg_expression_target(wc):
-#     return expand(
-#         COLLATED_CLUSTERED_AGG_EXPRESSION,
-#         min_counts=config['min_counts_per_spot'],
-#         resolution=config['clustering_resolutions'],
-#     )
-
-def get_fn_collated_agg_expression_target(wc):
+def get_annotated_region_limma_gsea_results(wc):
     return expand(
-        FN_COLLATED_CLUSTERED_AGG_EXPRESSION,
+        join('<results>', 'limma', 'min_{min_counts}_counts',
+            'ratio_threshold_{ratio_threshold}', '{combination}',
+            '{modality}', 'gsea', '{geneset_name}', 'dotplot.png'),
         min_counts=config['min_counts_per_spot'],
-        resolution=config['clustering_resolutions'],
         ratio_threshold=config['filter_ratio_threshold'],
-    )
-
-def get_region_network_targets(wc):
-    return expand(
-        REGION_INDEGREES,
-        min_counts=config['min_counts_per_spot'],
-        resolution=config['clustering_resolutions'],
-        ratio_threshold=config['filter_ratio_threshold'],
+        combination=LIMMA_COMBINATIONS,
+        modality=config['gsea_modalities'],
+        geneset_name=config['gene_sets'],
     )
 
 ### Rules ###
 rule all:
     input:
-        # get_network_targets,
-        # get_agg_expression_targets,
-        # get_collated_agg_expression_target,
-        get_fn_collated_agg_expression_target,
-        get_region_network_targets,
+        get_annotated_region_limma_gsea_results,
     default_target:
         True
 
 include: join('rules', 'preprocessing.smk')
 include: join('rules', 'networks.smk')
+include: join('rules', 'limma.smk')

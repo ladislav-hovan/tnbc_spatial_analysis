@@ -1,3 +1,4 @@
+# Path variables
 resources: &RSRC "resources"
 results: &RSLT "results"
 pathvars:
@@ -7,12 +8,15 @@ pathvars:
   priors: "<resources>/priors"
   scripts: "workflow/scripts"
   templates: "workflow/sisana_templates"
+# Preprocessing settings
 slide_selection: "best_genes_median"
 min_counts_per_spot: [ 0 ]
-gpu_ids: [ 2, 3 ]
 clustering_resolutions: [ 1.0 ]
 filter_ratio_threshold: [ 0.1 ]
+# Network generation settings
+gpu_ids: [ 2, 3 ]
 lioness_threads: 8
+# Analysis settings
 modalities: [ "expression", "indegrees", "outdegrees" ]
 gsea_modalities: [ "expression", "indegrees" ]
 gene_sets:

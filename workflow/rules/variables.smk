@@ -29,6 +29,9 @@ COLLATED_CLUSTERED_AGG_EXPRESSION = join(CLUSTERED_DIR,
 FN_COLLATED_CLUSTERED_AGG_EXPRESSION = join(CLUSTERED_DIR,
     'ratio_threshold_{ratio_threshold}', 'fn_collated_agg_expression.feather')
 # Cluster annotation from reference
+ALL_ANNOTATIONS = join('<resources>', 'classifAll.RDS')
+ANNOTATED_CLASSIFICATION = join('<results>', 'classification', 'original', 
+    '{patient_id}', '{slide}', 'classification.feather')
 ANNOTATED_DIR = join('<results>', 'agg_expression', 'annotated',
     'min_{min_counts}_counts')
 ANNOTATED_AGG_EXPRESSION = join(ANNOTATED_DIR, '{patient_id}', '{slide}',
@@ -36,8 +39,6 @@ ANNOTATED_AGG_EXPRESSION = join(ANNOTATED_DIR, '{patient_id}', '{slide}',
 ANNOTATED_AGG_EXPRESSION_ALT = join('<results>', 'agg_expression', 'annotated',
     'min_{{min_counts}}_counts', '{patient_id}', '{slide}',
     'agg_expression.feather')
-ANNOTATED_CLASSIFICATION = join('<results>', 'classification', 'original', 
-    '{patient_id}', '{slide}', 'classification.feather')
 COLLATED_ANNOTATED_AGG_EXPRESSION = join(ANNOTATED_DIR,
     'collated_agg_expression.feather')
 FN_COLLATED_ANNOTATED_AGG_EXPRESSION = join(ANNOTATED_DIR,

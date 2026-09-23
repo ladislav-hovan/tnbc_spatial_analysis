@@ -213,3 +213,23 @@ rule create_region_metadata:
         -e {input.expression} \
         -m {output.metadata}
         """
+
+rule process_spot_classification:
+    input:
+        script = join('<scripts>', 'process_spot_classification.R'),
+        all_classes = ALL_ANNOTATIONS,
+    output:
+        classification_files = expand(
+            ANNOTATED_CLASSIFICATION,
+            zip,
+            patient_id=sample_df['patient'],
+            slide=sample_df['slide'],
+        ),
+    params:
+        output_dir = subpath(ANNOTATED_CLASSIFICATION, ancestor=3),
+    shell:
+        """
+        {input.script} \
+        -i {input.all_classes} \
+        -od {params.output_dir}
+        """

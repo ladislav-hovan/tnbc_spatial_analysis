@@ -49,8 +49,8 @@ load_frame <- function(
 }
 
 run_limma <- function(
-    data,
-    targets,
+    data_path,
+    targets_path,
     groupA,
     groupB,
     outfile
@@ -60,11 +60,14 @@ run_limma <- function(
     #' @description Performs the Limma analysis using the provided data
     #' and targets files as well as two groups to be compared.
     #'
-    #' @param data Path to the input data file
-    #' @param targets Path to the input targets file
+    #' @param data_path Path to the input data file
+    #' @param targets_path Path to the input targets file
     #' @param groupA First group for the comparison
     #' @param groupB Second group for the comparison
     #' @param outfile Path to save the analysis results into
+
+    data <- load_frame_from_arrow(data_path)
+    targets <- load_frame(targets_path)
 
     mask <- targets$Condition %in% c(groupA, groupB)
     data_masked <- data[rownames(targets)[mask]]
@@ -100,8 +103,8 @@ if (sys.nframe() == 0L) {
     args <- parser$parse_args()
 
     run_limma(
-        data=args$data,
-        targets=args$targets,
+        data_path=args$data,
+        targets_path=args$targets,
         groupA=args$groupA,
         groupB=args$groupB,
         outfile=args$outfile

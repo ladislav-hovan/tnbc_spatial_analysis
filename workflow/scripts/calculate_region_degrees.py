@@ -62,7 +62,7 @@ def execute_lioness_workflow(
     npy_path = join(output_dir, 'lioness.npy')
     data = np.load(npy_path)
     df = pd.DataFrame(data, index=mi)
-    df.columns = [str(i + 1) for i in df.columns]
+    df.columns = expr_df.columns
     s_df = df.sort_index()
     # Remove the superfluous .npy file
     remove(npy_path)

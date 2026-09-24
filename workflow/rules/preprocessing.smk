@@ -219,17 +219,17 @@ rule process_spot_classification:
         script = join('<scripts>', 'process_spot_classification.R'),
         all_classes = ALL_ANNOTATIONS,
     output:
+        # This ensures that the directory gets created
+        output_dir = directory(subpath(ANNOTATED_CLASSIFICATION, ancestor=3)),
         classification_files = expand(
             ANNOTATED_CLASSIFICATION,
             zip,
             patient_id=sample_df['patient'],
             slide=sample_df['slide'],
         ),
-    params:
-        output_dir = subpath(ANNOTATED_CLASSIFICATION, ancestor=3),
     shell:
         """
         {input.script} \
         -i {input.all_classes} \
-        -od {params.output_dir}
+        -od {output.output_dir}
         """

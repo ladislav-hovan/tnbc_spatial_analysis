@@ -22,7 +22,7 @@ to generate spatially resolved gene regulatory networks.
 
 
 ## General Information
-This pipeline downloads the Visium data from the original paper,
+This pipeline downloads the ST data from the original paper,
 preprocesses it to make it compatible with STOAT and generates
 spatially resolved gene regulatory networks.
 It also does the downstream analysis.
@@ -42,16 +42,29 @@ The requirements are provided in a `requirements.txt` file.
 
 
 ## Usage
-Running a Snakemake pipeline is straightforward:
+Running this Snakemake pipeline is straightforward:
 
 ``` bash
-snakemake --cores=10 --resources gpus=1
+pixi run gpu-snakemake --cores=10 --resources gpus=1 --sdm conda
 ```
+
+Invoking the `snakemake` command like this will use the provided pixi
+environment.
+However, it is still possible to use a local snakemake installation,
+assuming all the dependencies are installed.
+
+The `--sdm conda` selects conda as the dependency manager.
+It is not necessary to have conda installed separately as the pixi
+environment contains it.
 
 It is assumed that all the input is present and that the settings in the
 `config.yaml` file are correct.
 Some of the relevant settings are:
-- `input_dir`: the directory containing the input files
+- `slide_selection`: the metric to select the best slide for each
+patient
+- `gpu_ids`: the IDs of GPUs available for calculation
+- `filter_ratio_threshold`: the ratio of samples a gene has to be
+expressed in to be kept
 
 
 ## Project Status
@@ -60,14 +73,13 @@ The project is: _in progress_.
 
 ## Room for Improvement
 Room for improvement:
-- Nothing to improve so far since nothing is implemented
+- Some code duplication to be removed if possible
+- Support for more clustering approaches
+- Automated annotation of clusters
 
 To do:
-- Data download
-- Preprocessing
-- Region assignments
-- Network generation
-- Downstream analysis
+- Data download instead of provided files
+- More downstream analysis
 
 
 ## Acknowledgements

@@ -10,7 +10,7 @@ visualize:
     colors:  # (Required) The colors for each group, in the same order the groups appear in the groups arg. Supports matplotlib named colors (https://matplotlib.org/stable/gallery/color/named_colors.html)
       - cornflowerblue
       - orange
-    adjpcol: FDR # (Optional, Default: FDR) The name of the column containing the adj. p-value
+    adjpcol: {adjpcol} # (Optional, Default: FDR) The name of the column containing the adj. p-value
     xaxisthreshold: {x_thresh} # (Optional, Default: 50) Threshold to use for the x-axis (value will also be applied to the negative end of the x axis, meaning a value of 50 really means +/- 50)"
     adjpvalthreshold: {pval_thresh} # (Optional, Default: 0.05) Threshold to use for the adjusted p-value (y-axis)
     difftype: {difftype} # (Optional, Default: median) Choices are 'median' or 'mean'. Enter whether you are plotting the differences in medians or means.

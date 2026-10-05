@@ -1,3 +1,6 @@
+### Imports ###
+from lib.helper_functions import get_difftype, get_x_thresh
+
 ### Rules ###
 rule create_targets_file:
     input:
@@ -114,4 +117,50 @@ rule rename_limma_gsea_files:
         mv {input.t_gsea} {output.gsea}
         mv {input.t_enrich_plot} {output.enrich_plot}
         mv {input.t_dotplot} {output.dotplot}
+        """
+
+rule create_limma_volcanoplot:
+    input:
+        script = join('<scripts>', 'fill_out_template.py'),
+        template = join('<templates>', 'volcano_template.yaml'),
+        comparison = join(LIMMA_DIR, '{modality}', 'results.tsv'),
+    output:
+        config = LIMMA_VOLCANO_CONFIG,
+        t_volcano = temp(T_LIMMA_VOLCANO_PLOT),
+    conda:
+        join('..', 'envs', 'sisana_env.yaml')
+    params:
+        diffcol = 'logFC',
+        x_thresh = lambda wildcards: get_x_thresh(wildcards.metric,
+            wildcards.modality),
+        difftype = lambda wildcards: get_difftype(wildcards.metric),
+        volcano_dir = subpath(output.t_volcano, parent=True),
+    shell:
+        """
+        {input.script} \
+        -t {input.template} \
+        -o {output.config} \
+        -s statsfile {input.comparison} \
+        -s diffcol {params.diffcol} \
+        -s groupA {wildcards.groupA} \
+        -s groupB {wildcards.groupB} \
+        -s adjpcol adj.P.Val \
+        -s x_thresh {params.x_thresh} \
+        -s pval_thresh {wildcards.pval} \
+        -s difftype {params.difftype} \
+        -s output_dir {params.volcano_dir}
+
+        sisana visualize volcano {output.config} || touch {output.t_volcano}
+        """
+
+rule rename_limma_volcano_plot:
+    input:
+        t_volcano = T_LIMMA_VOLCANO_PLOT,
+    output:
+        volcano = LIMMA_VOLCANO_PLOT,
+    params:
+        volcano_dir = subpath(output.volcano, parent=True),
+    shell:
+        """
+        mv {input.t_volcano} {output.volcano}
         """

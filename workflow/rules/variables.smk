@@ -123,12 +123,22 @@ LIMMA_DIR = join('<results>', 'limma', 'min_{min_counts}_counts',
 ### Limma GSEA ###
 LIMMA_GSEA_DIR = join(LIMMA_DIR, '{modality}', 'gsea', '{geneset_name}')
 LIMMA_GSEA_CONFIG = join(LIMMA_GSEA_DIR, 'config.yaml')
-T_LIMMA_GSEA_RESULTS = join(LIMMA_GSEA_DIR, 'comparison_prerank_GSEA_'
-    '{geneset_name}_results.txt')
+T_LIMMA_GSEA_RESULTS = join(LIMMA_GSEA_DIR, 
+    'comparison_prerank_GSEA_{geneset_name}_results.txt')
 LIMMA_GSEA_RESULTS = join(LIMMA_GSEA_DIR, 'GSEA_results.txt')
-T_LIMMA_GSEA_ENRICHMENT = join(LIMMA_GSEA_DIR, 'comparison_GSEA_{geneset_name}'
-    '_basic_enrichment_plot.png')
+T_LIMMA_GSEA_ENRICHMENT = join(LIMMA_GSEA_DIR,
+    'comparison_GSEA_{geneset_name}_basic_enrichment_plot.png')
 LIMMA_GSEA_ENRICHMENT = join(LIMMA_GSEA_DIR, 'enrichment_plot.png')
-T_LIMMA_GSEA_DOTPLOT = join(LIMMA_GSEA_DIR, 'comparison_GSEA_{geneset_name}'
-    '_basic_enrichment_dotplot.png')
+T_LIMMA_GSEA_DOTPLOT = join(LIMMA_GSEA_DIR,
+    'comparison_GSEA_{geneset_name}_basic_enrichment_dotplot.png')
 LIMMA_GSEA_DOTPLOT = join(LIMMA_GSEA_DIR, 'dotplot.png')
+
+### Limma volcano plots ###
+LIMMA_VOLCANO_DIR = join('<results>', 'limma', 'min_{min_counts}_counts',
+    'ratio_threshold_{ratio_threshold}', '{pairing}' '{column}',
+    '{groupA}_{groupB}', '{modality}', 'volcano', '{test}', '{metric}',
+    '{pval}')
+LIMMA_VOLCANO_CONFIG = join(LIMMA_VOLCANO_DIR, 'config.yaml')
+T_LIMMA_VOLCANO_PLOT = join(LIMMA_VOLCANO_DIR,
+    'volcano_plot_adjp_{pval}_top_15.png')
+LIMMA_VOLCANO_PLOT = join(LIMMA_VOLCANO_DIR, 'volcano_plot.png')

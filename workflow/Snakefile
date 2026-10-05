@@ -35,8 +35,7 @@ LIMMA_COMBINATIONS = [
     ]
 ]
 
-def get_annotated_region_limma_gsea_results(wc):
-    return expand(
+TARGET_LIMMA_GSEA_RESULTS = expand(
         join('<results>', 'limma', 'min_{min_counts}_counts',
             'ratio_threshold_{ratio_threshold}', '{combination}',
             '{modality}', 'gsea', '{geneset_name}', 'dotplot.png'),
@@ -46,6 +45,18 @@ def get_annotated_region_limma_gsea_results(wc):
         modality=config['gsea_modalities'],
         geneset_name=config['gene_sets'],
     )
+
+TARGET_LIMMA_VOLCANO_PLOTS = expand(
+    join('<results>', 'limma', 'min_{min_counts}_counts',
+        'ratio_threshold_{ratio_threshold}', '{combination}', '{modality}',
+        'volcano', '{test}', '{metric}', '0.05', 'volcano_plot.png'),
+    min_counts=config['min_counts_per_spot'],
+    ratio_threshold=config['filter_ratio_threshold'],
+    combination=LIMMA_COMBINATIONS,
+    modality=config['modalities'],
+    test=config['tests'],
+    metric=config['metrics'],
+)
 
 TARGET_COMBINATIONS = [
     join('{0}', '{1}_{2}').format(*combs) for combs in
@@ -69,7 +80,8 @@ TARGET_VOLCANO_PLOTS = expand(
 ### Rules ###
 rule all:
     input:
-        get_annotated_region_limma_gsea_results,
+        TARGET_LIMMA_GSEA_RESULTS,
+        TARGET_LIMMA_VOLCANO_PLOTS,
         TARGET_VOLCANO_PLOTS,
     default_target:
         True

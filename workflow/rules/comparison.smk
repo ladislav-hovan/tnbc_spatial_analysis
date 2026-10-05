@@ -1,58 +1,5 @@
-### Helper functions ###
-def get_difftype(
-    metric: str,
-) -> str:
-    """
-    Converts the name of the metric to a difference type.
-
-    Parameters
-    ----------
-    metric : str
-        Name of the metric
-
-    Returns
-    -------
-    str
-        Inferred difference type
-    """
-
-    if 'median' in metric:
-        return 'median'
-    else:
-        return 'mean'
-
-def get_x_thresh(
-    metric: str,
-    modality: str,
-) -> float:
-    """
-    Provides a threshold for the difference significance based
-    on the name of the metric and the modality.
-
-    Parameters
-    ----------
-    metric : str
-        Name of the metric
-    modality : str
-        Modality of the data
-
-    Returns
-    -------
-    float
-        Threshold for the difference
-    """
-
-    if metric == 'meandiff':
-        return 1.5
-    elif metric == 'mediandiff':
-        if modality == 'expression':
-            return 0.5
-        elif modality == 'indegree':
-            return 5
-        elif modality == 'outdegree':
-            return 100
-    # "Sensible" default
-    return 2
+### Imports ###
+from lib.helper_functions import get_difftype, get_x_thresh
 
 ### Rules ###
 rule create_mapfile:
@@ -174,6 +121,7 @@ rule create_volcanoplot:
         -s diffcol {params.diffcol} \
         -s groupA {wildcards.groupA} \
         -s groupB {wildcards.groupB} \
+        -s adjpcol FDR \
         -s x_thresh {params.x_thresh} \
         -s pval_thresh {wildcards.pval} \
         -s difftype {params.difftype} \

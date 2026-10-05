@@ -20,8 +20,11 @@ def convert_lioness_output(
         Path to save the converted tsv file into
     """
 
-    # Load the feather file and convert it to a tsv file
-    df = read_feather(input_path).set_index('index')
+    # Load the feather file and set the correct index column
+    df = read_feather(input_path)
+    ind_col_name = df.columns[0]
+    df.set_index(ind_col_name, inplace=True)
+    # Save the DataFrame to a tsv file
     df.to_csv(output_path, sep='\t')
 
 ### Main body ###

@@ -172,6 +172,8 @@ rule create_volcanoplot:
         -o {output.config} \
         -s statsfile {input.comparison} \
         -s diffcol {params.diffcol} \
+        -s groupA {wildcards.groupA} \
+        -s groupB {wildcards.groupB} \
         -s x_thresh {params.x_thresh} \
         -s pval_thresh {wildcards.pval} \
         -s difftype {params.difftype} \

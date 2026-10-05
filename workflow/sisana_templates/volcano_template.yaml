@@ -1,14 +1,20 @@
 visualize:
   # Use the following option if you wish to make a volcano plot, plotting both the fold change and FDR of genes
   # example: sisana visualize volcano ./example_inputs/params.yml
-  volcano: 
-    statsfile: {statsfile} # Path to TSV file containing the difference in mean/median degree, p-value, and FDR
-    diffcol: {diffcol} # The name of the column containing the values for the x-axis. For networks, this should be the difference in median degree between the two groups
-    adjpcol: FDR # The name of the column containing the adj. p-value
-    xaxisthreshold: {x_thresh} # Threshold to use for the x-axis (value will also be applied to the negative end of the fold change axis, meaning a value of 50 really means +/- 50)"
-    adjpvalthreshold: {pval_thresh} # Threshold to use for the adjusted p-value (y-axis)
-    difftype: {difftype} # Choices are 'median' or 'mean'. Enter whether you are plotting the differences in medians or means. 
-    outdir: {output_dir} # The directory to save the output to
-    genelist: # ./example_inputs/volcano_plot_genes.txt # [OPTIONAL, BUT DON'T DELETE] If you have a list of genes you want to label in a .txt file, no header, enter them here. Otherwise, keep this blank and only the top genes (number dictated by numlabels) will be labeled 
-    numlabels: 15 # [OPTIONAL, BUT DON'T DELETE] Maximum number of values to label on each half of the plot. Default value is 15. Will not be used if a file is given for genelist.
-    top: true
+  volcano:
+    statsfile: {statsfile} # (Required) Path to TSV file containing the difference in mean/median degree, p-value, and FDR. This file is generated with "sisana compare means".
+    diffcol: {diffcol} # (Required) The name of the column containing the values for the x-axis. For networks, this should be the difference in median degree between the two groups
+    groups:  # (Required) The names of the groups to plot
+      - {groupA}
+      - {groupB}
+    colors:  # (Required) The colors for each group, in the same order the groups appear in the groups arg. Supports matplotlib named colors (https://matplotlib.org/stable/gallery/color/named_colors.html)
+      - cornflowerblue
+      - orange
+    adjpcol: FDR # (Optional, Default: FDR) The name of the column containing the adj. p-value
+    xaxisthreshold: {x_thresh} # (Optional, Default: 50) Threshold to use for the x-axis (value will also be applied to the negative end of the x axis, meaning a value of 50 really means +/- 50)"
+    adjpvalthreshold: {pval_thresh} # (Optional, Default: 0.05) Threshold to use for the adjusted p-value (y-axis)
+    difftype: {difftype} # (Optional, Default: median) Choices are 'median' or 'mean'. Enter whether you are plotting the differences in medians or means.
+    outdir: {output_dir} # (Optional, Default: ./output/volcano/) The directory to save the output to
+    genelist: # (Required to have a 'genelist' parameter in this file. Do not set any value for this parameter (e.g. use "genelist: " instead of "genelist: file.txt") if you do not want to use a gene list and then set "top" to True). If you have a list of genes you want to label in a .txt file (with no header), enter the file name here.
+    top: true # (Required to have a 'top' value set in this file. Set to "False" if you do not want to label the top genes and then give a file as input to "genelist"). Flag for whether to automatically label the top values. Finds the top genes based on FDR and fold change.
+    numlabels: 15 # (Optional, Default: 15) Maximum number of values to label on each half of the plot. Will only be used if 'top' if set to True.

@@ -1,3 +1,4 @@
+### Rules ###
 rule create_targets_file:
     input:
         script = join('<scripts>', 'create_targets_file.py'),

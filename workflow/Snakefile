@@ -47,13 +47,34 @@ def get_annotated_region_limma_gsea_results(wc):
         geneset_name=config['gene_sets'],
     )
 
+TARGET_COMBINATIONS = [
+    join('{0}', '{1}_{2}').format(*combs) for combs in
+    [
+        ['Classification', 'Stroma', 'Tumor'],
+    ]
+]
+
+TARGET_VOLCANO_PLOTS = expand(
+    join('<results>', 'volcano', 'min_{min_counts}_counts',
+        'ratio_threshold_{ratio_threshold}', '{combination}', '{modality}',
+        '{test}', '{metric}', '0.05', 'volcano_plot.png'),
+    min_counts=config['min_counts_per_spot'],
+    ratio_threshold=config['filter_ratio_threshold'],
+    combination=TARGET_COMBINATIONS,
+    modality=config['modalities'],
+    test=config['tests'],
+    metric=config['metrics'],
+)
+
 ### Rules ###
 rule all:
     input:
         get_annotated_region_limma_gsea_results,
+        TARGET_VOLCANO_PLOTS,
     default_target:
         True
 
 include: join('rules', 'preprocessing.smk')
 include: join('rules', 'networks.smk')
+include: join('rules', 'comparison.smk')
 include: join('rules', 'limma.smk')

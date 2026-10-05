@@ -1,3 +1,42 @@
+### Definitions ###
+sample_df = read_table(join(config['resources'], 'samples_list.tsv'))
+
+### Helper functions ###
+def get_selected_annotated_expr_data(wc):
+    with checkpoints.select_best_slides.get().output['mapping'].open() as f:
+        df = read_table(f)
+        return expand(
+            ANNOTATED_AGG_EXPRESSION_ALT,
+            zip,
+            patient_id=df['patient_id'],
+            slide=df[config['slide_selection']],
+        )
+
+def get_selected_expr_data(wc):
+    with checkpoints.select_best_slides.get().output['mapping'].open() as f:
+        df = read_table(f)
+        return expand(
+            CLUSTERED_AGG_EXPRESSION_ALT,
+            zip,
+            patient_id=df['patient_id'],
+            slide=df[config['slide_selection']],
+        )
+
+### Checkpoints ###
+checkpoint select_best_slides:
+    input:
+        script = join('<scripts>', 'select_best_slides.py'),
+        qc = COLLATED_QC_DATA,
+    output:
+        mapping = BEST_SLIDES,
+    shell:
+        """
+        {input.script} \
+        -i {input.qc} \
+        -o {output.mapping}
+        """
+
+### Rules ###
 rule convert_count_format:
     input:
         script = join('<scripts>', 'convert_count_format.R'),
@@ -48,8 +87,6 @@ rule calculate_qc_metrics:
         -d {output.data}
         """
 
-sample_df = read_table(join(config['resources'], 'samples_list.tsv'))
-
 rule collate_qc_data:
     input:
         script = join('<scripts>', 'collate_qc_data.py'),
@@ -66,19 +103,6 @@ rule collate_qc_data:
         {input.script} \
         -qc {input.qc_data} \
         -o {output.collated}
-        """
-
-checkpoint select_best_slides:
-    input:
-        script = join('<scripts>', 'select_best_slides.py'),
-        qc = COLLATED_QC_DATA,
-    output:
-        mapping = BEST_SLIDES,
-    shell:
-        """
-        {input.script} \
-        -i {input.qc} \
-        -o {output.mapping}
         """
 
 rule cluster_and_aggregate_expression:
@@ -100,16 +124,6 @@ rule cluster_and_aggregate_expression:
         -cp {output.classification} \
         -ep {output.aggregated_expression}
         """
-
-def get_selected_expr_data(wc):
-    with checkpoints.select_best_slides.get().output['mapping'].open() as f:
-        df = read_table(f)
-        return expand(
-            CLUSTERED_AGG_EXPRESSION_ALT,
-            zip,
-            patient_id=df['patient_id'],
-            slide=df[config['slide_selection']],
-        )
 
 rule collate_agg_expression_data:
     input:
@@ -159,16 +173,6 @@ rule annotate_and_aggregate_expression:
         -cp {input.classification} \
         -ep {output.aggregated_expression}
         """
-
-def get_selected_annotated_expr_data(wc):
-    with checkpoints.select_best_slides.get().output['mapping'].open() as f:
-        df = read_table(f)
-        return expand(
-            ANNOTATED_AGG_EXPRESSION_ALT,
-            zip,
-            patient_id=df['patient_id'],
-            slide=df[config['slide_selection']],
-        )
 
 rule collate_agg_annotated_expression_data:
     input:

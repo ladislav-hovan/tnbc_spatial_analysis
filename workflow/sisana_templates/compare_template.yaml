@@ -1,0 +1,13 @@
+compare:
+  # Use the following if you wish to perform either a t-test, Mann-Whitney test, or their paired alternatives
+  # example: sisana compare ./example_inputs/params.yml
+  datafile: {datafile} # Path to the data file (either expression, indegree, or outdegree)
+  mapfile: {mapfile} # Path to the mapping file, which maps sample name (column 1) to sample group (column 2). Assumes file has a header.
+  datatype: {datatype} # The type of data being used (example: "expression" or "degree")
+  groups: # Names of the two groups (from the second column of mapfile) to be compared. The second group listed will be used as the numerator in the fold change calulation.
+  - {groupA}
+  - {groupB}
+  testtype: {test} # Type of comparison to perform, either "tt" for Student's t-test, "mw" for Mann-Whitney U, "paired_tt", or "wilcoxon"
+  filetype: tsv # The type of data file ("csv" or "txt" or "tsv") being used
+  rankby: {rank_metric} # The statistic to rank the .rnk output file by for GSEA. Choices are "mediandiff", "mwu", "neglogp", and "meandiff"
+  outdir: {output_dir} # The directory to save the output to

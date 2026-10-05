@@ -75,6 +75,37 @@ ANY_AGG_EXPRESSION = join('<results>', 'agg_expression', '{agg_type}',
 ANY_REGION_EXPRESSION = join('<results>', 'networks', 'region_specific',
     '{agg_type}', '{specification}', 'expression.feather')
 
+### Group comparison ###
+LIONESS_OUTPUT = join('<results>', 'networks', 'region_specific', 'annotated',
+    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
+    '{modality}.feather')
+CONVERTED_LIONESS_OUTPUT = join('<results>', 'networks', 'region_specific',
+    'annotated', 'min_{min_counts}_counts',
+    'ratio_threshold_{ratio_threshold}', '{modality}.tsv')
+MAPFILE = join('<results>', 'comparisons', 'min_{min_counts}_counts',
+    'ratio_threshold_{ratio_threshold}', '{column}', 'groups.csv')
+RESTRICTED_MAPFILE = join('<results>', 'comparisons',
+    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
+    '{select_column}={select_value}__{column}', 'groups.csv')
+COMPARE_DIR = join('<results>', 'comparisons', 'min_{min_counts}_counts',
+    'ratio_threshold_{ratio_threshold}', '{column}', '{groupA}_{groupB}',
+    '{modality}', '{test}', '{metric}')
+COMPARE_CONFIG = join(COMPARE_DIR, 'config.yaml')
+T_COMPARE_FILE = join(COMPARE_DIR, 'comparison_{test}_between_{groupA}_'
+    '{groupB}_{modality}.txt')
+COMPARE_FILE = join(COMPARE_DIR, 'comparison.txt')
+T_COMPARE_RANKS = join(COMPARE_DIR, 'comparison_{test}_between_{groupA}_'
+    '{groupB}_{modality}_ranked_{metric}.rnk')
+COMPARE_RANKS = join(COMPARE_DIR, 'comparison.rnk')
+
+### Volcano plots ###
+VOLCANO_DIR = join('<results>', 'volcano', 'min_{min_counts}_counts',
+    'ratio_threshold_{ratio_threshold}', '{column}', '{groupA}_{groupB}',
+    '{modality}', '{test}', '{metric}', '{pval}')
+VOLCANO_CONFIG = join(VOLCANO_DIR, 'config.yaml')
+T_VOLCANO_PLOT = join(VOLCANO_DIR, 'volcano_plot_adjp_{pval}_top_15.png')
+VOLCANO_PLOT = join(VOLCANO_DIR, 'volcano_plot.png')
+
 ### Limma comparison ###
 METADATA_FILE = join(ANNOTATED_DIR, 'ratio_threshold_{ratio_threshold}',
     'fn_collated_metadata.tsv')

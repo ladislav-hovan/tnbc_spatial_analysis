@@ -1,8 +1,7 @@
-from pathlib import Path
-from time import sleep
-
+### Definitions ###
 compute = 'gpu' if USE_GPU else 'cpu'
 
+### Rules ###
 rule calculate_spot_degrees:
     input:
         script = join('<scripts>', 'calculate_spot_degrees.py'),

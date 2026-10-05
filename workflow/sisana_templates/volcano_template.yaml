@@ -1,0 +1,14 @@
+visualize:
+  # Use the following option if you wish to make a volcano plot, plotting both the fold change and FDR of genes
+  # example: sisana visualize volcano ./example_inputs/params.yml
+  volcano: 
+    statsfile: {statsfile} # Path to TSV file containing the difference in mean/median degree, p-value, and FDR
+    diffcol: {diffcol} # The name of the column containing the values for the x-axis. For networks, this should be the difference in median degree between the two groups
+    adjpcol: FDR # The name of the column containing the adj. p-value
+    xaxisthreshold: {x_thresh} # Threshold to use for the x-axis (value will also be applied to the negative end of the fold change axis, meaning a value of 50 really means +/- 50)"
+    adjpvalthreshold: {pval_thresh} # Threshold to use for the adjusted p-value (y-axis)
+    difftype: {difftype} # Choices are 'median' or 'mean'. Enter whether you are plotting the differences in medians or means. 
+    outdir: {output_dir} # The directory to save the output to
+    genelist: # ./example_inputs/volcano_plot_genes.txt # [OPTIONAL, BUT DON'T DELETE] If you have a list of genes you want to label in a .txt file, no header, enter them here. Otherwise, keep this blank and only the top genes (number dictated by numlabels) will be labeled 
+    numlabels: 15 # [OPTIONAL, BUT DON'T DELETE] Maximum number of values to label on each half of the plot. Default value is 15. Will not be used if a file is given for genelist.
+    top: true

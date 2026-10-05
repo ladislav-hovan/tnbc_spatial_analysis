@@ -11,7 +11,7 @@ pathvars:
 # Preprocessing settings
 slide_selection: "best_genes_median"
 min_counts_per_spot: [ 0 ]
-clustering_resolutions: [ 1.0 ]
+clustering_resolutions: [ 0.5, 1.0 ]
 filter_ratio_threshold: [ 0.1 ]
 # Network generation settings
 gpu_ids: [ 2, 3 ]
@@ -19,6 +19,8 @@ lioness_threads: 8
 # Analysis settings
 modalities: [ "expression", "indegrees", "outdegrees" ]
 gsea_modalities: [ "expression", "indegrees" ]
+tests: [ "mw" ]
+metrics: [ "mediandiff", "meandiff" ]
 gene_sets:
   Hallmarks: "<resources>/gene_sets/h.all.v2025.1.Hs.symbols.gmt"
   Biological_process: "<resources>/gene_sets/c5.go.bp.v2025.1.Hs.symbols.gmt"

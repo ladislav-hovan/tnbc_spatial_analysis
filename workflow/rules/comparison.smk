@@ -111,6 +111,8 @@ rule compare_groups:
         config = COMPARE_CONFIG,
         t_comparison = temp(T_COMPARE_FILE),
         t_ranks = temp(T_COMPARE_RANKS),
+    conda:
+        join('..', 'envs', 'sisana_env.yaml')
     params:
         compare_dir = subpath(output.t_ranks, parent=True),
     shell:
@@ -153,6 +155,8 @@ rule create_volcanoplot:
     output:
         config = VOLCANO_CONFIG,
         t_volcano = temp(T_VOLCANO_PLOT),
+    conda:
+        join('..', 'envs', 'sisana_env.yaml')
     params:
         diffcol = lambda wildcards: 'difference_of_'
             f'{get_difftype(wildcards.metric)}s_'

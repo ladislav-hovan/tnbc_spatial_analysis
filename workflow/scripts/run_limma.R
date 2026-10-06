@@ -68,6 +68,10 @@ run_limma <- function(
 
     data <- load_frame_from_arrow(data_path)
     targets <- load_frame(targets_path)
+    if (groupA == 'rest') {
+        mask <- targets$Condition != groupB
+        targets$Condition[mask] <- 'rest'
+    }
 
     mask <- targets$Condition %in% c(groupA, groupB)
     data_masked <- data[rownames(targets)[mask]]
@@ -78,7 +82,7 @@ run_limma <- function(
 
     fit <- lmFit(data_masked, design)
     fit <- eBayes(fit)
-    label <- paste0("Condition", toString(groupB))
+    label <- paste0('Condition', toString(groupB))
     results <- topTable(fit, coef=label, number=Inf)
 
     write.table(results, file=outfile, quote=FALSE, sep='\t', col.names=NA)

@@ -135,7 +135,7 @@ LIMMA_GSEA_DOTPLOT = join(LIMMA_GSEA_DIR, 'dotplot.png')
 
 ### Limma volcano plots ###
 LIMMA_VOLCANO_DIR = join('<results>', 'limma', 'min_{min_counts}_counts',
-    'ratio_threshold_{ratio_threshold}', '{pairing}' '{column}',
+    'ratio_threshold_{ratio_threshold}', '{pairing}', '{column}',
     '{groupA}_{groupB}', '{modality}', 'volcano', '{test}', '{metric}',
     '{pval}')
 LIMMA_VOLCANO_CONFIG = join(LIMMA_VOLCANO_DIR, 'config.yaml')

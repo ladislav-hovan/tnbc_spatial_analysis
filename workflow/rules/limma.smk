@@ -56,15 +56,16 @@ rule run_limma:
 
 rule create_limma_rankfile:
     input:
+        script = join('<scripts>', 'create_limma_rankfile.py'),
         limma_results = LIMMA_RESULTS,
     output:
         limma_ranks = LIMMA_RANKS,
-    run:
-        import pandas as pd
-
-        data = pd.read_table(input['limma_results'], index_col=0)
-        data['t'].sort_values(ascending=False).to_csv(output['limma_ranks'],
-            sep='\t', header=False)
+    shell:
+        """
+        {input.script} \
+        -i {input.limma_results} \
+        -o {output.limma_ranks}
+        """
 
 rule run_gsea_on_limma:
     input:

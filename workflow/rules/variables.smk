@@ -119,6 +119,8 @@ LIONESS_OUTPUT = join(ANNOTATED_REGION_DIR, '{modality}.feather')
 LIMMA_DIR = join('<results>', 'limma', 'min_{min_counts}_counts',
     'ratio_threshold_{ratio_threshold}', '{pairing}', '{column}',
     '{groupA}_{groupB}')
+LIMMA_RESULTS = join(LIMMA_DIR, '{modality}', 'results.tsv')
+LIMMA_RANKS = join(LIMMA_DIR, '{modality}', 'comparison.rnk')
 
 ### Limma GSEA ###
 LIMMA_GSEA_DIR = join(LIMMA_DIR, '{modality}', 'gsea', '{geneset_name}')
@@ -134,10 +136,10 @@ T_LIMMA_GSEA_DOTPLOT = join(LIMMA_GSEA_DIR,
 LIMMA_GSEA_DOTPLOT = join(LIMMA_GSEA_DIR, 'dotplot.png')
 
 ### Limma volcano plots ###
+LIMMA_VOLCANO_RESULTS = join(LIMMA_DIR, '{modality}', 'results_volcano.tsv')
 LIMMA_VOLCANO_DIR = join('<results>', 'limma', 'min_{min_counts}_counts',
     'ratio_threshold_{ratio_threshold}', '{pairing}', '{column}',
-    '{groupA}_{groupB}', '{modality}', 'volcano', '{test}', '{metric}',
-    '{pval}')
+    '{groupA}_{groupB}', '{modality}', 'volcano', '{pval}')
 LIMMA_VOLCANO_CONFIG = join(LIMMA_VOLCANO_DIR, 'config.yaml')
 T_LIMMA_VOLCANO_PLOT = join(LIMMA_VOLCANO_DIR,
     'volcano_plot_adjp_{pval}_top_15.png')

@@ -32,8 +32,22 @@ LIMMA_COMBINATIONS = [
     join('{0}', '{1}', '{2}_{3}').format(*combs) for combs in
     [
         ['Patient+Slide', 'Classification', 'Stroma', 'Tumor'],
+        ['Patient+Slide', 'Classification', 'rest', 'Tumor'],
+        ['Patient+Slide', 'Classification', 'rest', 'Stroma'],
+        ['Patient+Slide', 'Classification', 'rest', 'Lymphocyte'],
+        ['Patient+Slide', 'Classification', 'rest', 'Lactiferous.duct'],
     ]
 ]
+
+TARGET_LIMMA_RESULTS = expand(
+        join('<results>', 'limma', 'min_{min_counts}_counts',
+            'ratio_threshold_{ratio_threshold}', '{combination}',
+            '{modality}', 'results.tsv'),
+        min_counts=config['min_counts_per_spot'],
+        ratio_threshold=config['filter_ratio_threshold'],
+        combination=LIMMA_COMBINATIONS,
+        modality=config['modalities'],
+    )
 
 TARGET_LIMMA_GSEA_RESULTS = expand(
         join('<results>', 'limma', 'min_{min_counts}_counts',
@@ -49,13 +63,11 @@ TARGET_LIMMA_GSEA_RESULTS = expand(
 TARGET_LIMMA_VOLCANO_PLOTS = expand(
     join('<results>', 'limma', 'min_{min_counts}_counts',
         'ratio_threshold_{ratio_threshold}', '{combination}', '{modality}',
-        'volcano', '{test}', '{metric}', '0.05', 'volcano_plot.png'),
+        'volcano', '0.05', 'volcano_plot.png'),
     min_counts=config['min_counts_per_spot'],
     ratio_threshold=config['filter_ratio_threshold'],
     combination=LIMMA_COMBINATIONS,
     modality=config['modalities'],
-    test=config['tests'],
-    metric=config['metrics'],
 )
 
 TARGET_COMBINATIONS = [
@@ -81,6 +93,7 @@ TARGET_VOLCANO_PLOTS = expand(
 rule all:
     input:
         TARGET_LIMMA_GSEA_RESULTS,
+        TARGET_LIMMA_RESULTS,
         TARGET_LIMMA_VOLCANO_PLOTS,
         TARGET_VOLCANO_PLOTS,
     default_target:

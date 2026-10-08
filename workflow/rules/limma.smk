@@ -43,7 +43,7 @@ rule run_limma:
         data_file = LIONESS_OUTPUT,
         targets_file = TARGETS_FILE,
     output:
-        limma_results = join(LIMMA_DIR, '{modality}', 'results.tsv'),
+        limma_results = LIMMA_RESULTS,
     shell:
         """
         {input.script} \
@@ -56,9 +56,9 @@ rule run_limma:
 
 rule create_limma_rankfile:
     input:
-        limma_results = join(LIMMA_DIR, '{modality}', 'results.tsv'),
+        limma_results = LIMMA_RESULTS,
     output:
-        limma_ranks = join(LIMMA_DIR, '{modality}', 'comparison.rnk'),
+        limma_ranks = LIMMA_RANKS,
     run:
         import pandas as pd
 
@@ -70,7 +70,7 @@ rule run_gsea_on_limma:
     input:
         script = join('<scripts>', 'fill_out_template.py'),
         template = join('<templates>', 'gsea_template.yaml'),
-        ranks = join(LIMMA_DIR, '{modality}', 'comparison.rnk'),
+        ranks = LIMMA_RANKS,
         gmt_file = lambda wildcards: config['gene_sets'].get(
             wildcards.geneset_name),
     output:
@@ -119,21 +119,35 @@ rule rename_limma_gsea_files:
         mv {input.t_dotplot} {output.dotplot}
         """
 
-rule create_limma_volcanoplot:
+rule convert_limma_results_for_volcano_plot:
+    input:
+        script = join('<scripts>',
+            'convert_limma_results_for_volcano_plot.py'),
+        results = LIMMA_RESULTS,
+    output:
+        adjusted_results = join(LIMMA_DIR, '{modality}',
+            'results_volcano.tsv'),
+    shell:
+        """
+        {input.script} \
+        -i {input.results} \
+        -m logFC "logFC_({wildcards.groupB}-{wildcards.groupA})" \
+        -o {output.adjusted_results}
+        """
+
+rule create_limma_volcano_plot:
     input:
         script = join('<scripts>', 'fill_out_template.py'),
         template = join('<templates>', 'volcano_template.yaml'),
-        comparison = join(LIMMA_DIR, '{modality}', 'results.tsv'),
+        comparison = LIMMA_VOLCANO_RESULTS,
     output:
         config = LIMMA_VOLCANO_CONFIG,
         t_volcano = temp(T_LIMMA_VOLCANO_PLOT),
     conda:
         join('..', 'envs', 'sisana_env.yaml')
     params:
-        diffcol = 'logFC',
-        x_thresh = lambda wildcards: get_x_thresh(wildcards.metric,
-            wildcards.modality),
-        difftype = lambda wildcards: get_difftype(wildcards.metric),
+        diffcol = (lambda wildcards: f'logFC_({wildcards.groupB}-'
+            f'{wildcards.groupA})'),
         volcano_dir = subpath(output.t_volcano, parent=True),
     shell:
         """
@@ -141,13 +155,13 @@ rule create_limma_volcanoplot:
         -t {input.template} \
         -o {output.config} \
         -s statsfile {input.comparison} \
-        -s diffcol {params.diffcol} \
+        -s diffcol "{params.diffcol}" \
         -s groupA {wildcards.groupA} \
         -s groupB {wildcards.groupB} \
         -s adjpcol adj.P.Val \
-        -s x_thresh {params.x_thresh} \
+        -s x_thresh 1.5 \
         -s pval_thresh {wildcards.pval} \
-        -s difftype {params.difftype} \
+        -s difftype median \
         -s output_dir {params.volcano_dir}
 
         sisana visualize volcano {output.config} || touch {output.t_volcano}

@@ -78,11 +78,8 @@ def add_missing_spots(
         int(y) for y in x.split('x')])
     spatial_table = spatial_table[sorted_index, :]
     # Move the pixels to obsm table
-    # Transform them for proper neighbour calculations
-    spatial_table.obsm['spatial'] = np.zeros((spatial_table.n_obs, 2))
-    spatial_table.obsm['spatial'][:, 1] = spatial_table.obs['pixel_x'].values
-    spatial_table.obsm['spatial'][:, 0] = -((2 * np.sin(np.radians(60)) / 3) *
-        spatial_table.obs['pixel_y'].values)
+    spatial_table.obsm['spatial'] = spatial_table.obs[
+        ['pixel_x', 'pixel_y']].values
 
     return spatial_table
 

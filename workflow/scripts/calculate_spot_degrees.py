@@ -46,7 +46,7 @@ def execute_stoat_workflow(
 
     # Loading zarr
     stoat_obj = Stoat()
-    stoat_obj.load_zarr(zarr_path)
+    stoat_obj.load_zarr(zarr_path, n_neighs=4)
     # Filtering genes and spots
     stoat_obj.filter_genes(drop_deprecated=True, min_counts=1)
     stoat_obj.filter_spots(min_counts=min_counts_per_spot)

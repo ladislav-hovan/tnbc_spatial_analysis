@@ -14,7 +14,7 @@ min_counts_per_spot: [ 0 ]
 clustering_resolutions: [ 0.5, 1.0 ]
 filter_ratio_threshold: [ 0.1 ]
 # Network generation settings
-gpu_ids: [ 2, 3 ]
+gpu_ids: [ 0, 1, 2 ]
 lioness_threads: 8
 # Analysis settings
 modalities: [ "expression", "indegrees", "outdegrees" ]

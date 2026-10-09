@@ -89,6 +89,19 @@ TARGET_VOLCANO_PLOTS = expand(
     metric=config['metrics'],
 )
 
+def get_target_spot_level_degrees(wc):
+    with checkpoints.select_best_slides.get().output['mapping'].open() as f:
+        df = read_table(f)
+        return expand(
+            expand(
+                SPOT_INDEGREES_ALT,
+                zip,
+                patient_id=df['patient_id'],
+                slide=df[config['slide_selection']],
+            ),
+            min_counts=config['min_counts_per_spot'],
+        )
+
 ### Rules ###
 rule all:
     input:
@@ -96,6 +109,7 @@ rule all:
         TARGET_LIMMA_RESULTS,
         TARGET_LIMMA_VOLCANO_PLOTS,
         TARGET_VOLCANO_PLOTS,
+        get_target_spot_level_degrees,
     default_target:
         True
 

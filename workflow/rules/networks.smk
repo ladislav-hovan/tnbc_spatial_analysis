@@ -39,6 +39,7 @@ rule calculate_region_degrees:
     resources:
         gpus = int(USE_GPU),
         threads = 1 if USE_GPU else config['lioness_threads'],
+    priority: 10
     shell:
         """
         {input.script} \
@@ -63,6 +64,7 @@ rule calculate_annotated_region_degrees:
     resources:
         gpus = int(USE_GPU),
         threads = 1 if USE_GPU else config['lioness_threads'],
+    priority: 10
     shell:
         """
         {input.script} \

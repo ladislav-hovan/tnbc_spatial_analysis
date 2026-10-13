@@ -21,6 +21,8 @@ if 'gpus' in global_resources and global_resources['gpus'].value > 0:
 else:
     USE_GPU = False
 
+# TODO: Onstart logging of config?
+
 ### Input and output variables ###
 include: join('rules', 'variables.smk')
 

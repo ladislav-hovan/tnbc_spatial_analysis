@@ -41,5 +41,5 @@ if __name__ == '__main__':
 
     convert_lioness_output(
         input_path=args.input,
-        output_path=args.output
+        output_path=args.output,
     )

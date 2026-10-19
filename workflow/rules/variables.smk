@@ -30,7 +30,7 @@ FN_COLLATED_CLUSTERED_AGG_EXPRESSION = join(CLUSTERED_DIR,
     'ratio_threshold_{ratio_threshold}', 'fn_collated_agg_expression.feather')
 # Cluster annotation from reference
 ALL_ANNOTATIONS = join('<resources>', 'classifAll.RDS')
-ANNOTATED_CLASSIFICATION = join('<results>', 'classification', 'original', 
+ANNOTATED_CLASSIFICATION = join('<results>', 'classification', 'original',
     '{patient_id}', '{slide}', 'classification.feather')
 ANNOTATED_DIR = join('<results>', 'agg_expression', 'annotated',
     'min_{min_counts}_counts')
@@ -98,6 +98,32 @@ T_COMPARE_RANKS = join(COMPARE_DIR, 'comparison_{test}_between_{groupA}_'
     '{groupB}_{modality}_ranked_{metric}.rnk')
 COMPARE_RANKS = join(COMPARE_DIR, 'comparison.rnk')
 
+### Paired group comparison ###
+ADJUSTED_LIONESS_OUTPUT = join('<results>', 'paired_comparisons',
+    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
+    '{pairing}', '{column}', '{groupA}_{groupB}', '{modality}_adjusted.tsv')
+RESTRICTED_ADJUSTED_LIONESS_OUTPUT = join('<results>', 'paired_comparisons',
+    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
+    '{pairing}', '{select_column}={select_value}__{column}',
+    '{groupA}_{groupB}', '{modality}_adjusted.tsv')
+PAIRED_MAPFILE = join('<results>', 'paired_comparisons',
+    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
+    '{pairing}', '{column}', '{groupA}_{groupB}', 'groups.csv')
+RESTRICTED_PAIRED_MAPFILE = join('<results>', 'comparisons',
+    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
+    '{pairing}', '{select_column}={select_value}__{column}',
+    '{groupA}_{groupB}', 'groups.csv')
+PAIRED_COMPARE_DIR = join('<results>', 'comparisons',
+    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}', '{column}',
+    '{groupA}_{groupB}', '{modality}', '{test}', '{metric}')
+PAIRED_COMPARE_CONFIG = join(PAIRED_COMPARE_DIR, 'config.yaml')
+T_PAIRED_COMPARE_FILE = join(PAIRED_COMPARE_DIR, 'comparison_{test}_between_'
+    '{groupA}_{groupB}_{modality}.txt')
+PAIRED_COMPARE_FILE = join(PAIRED_COMPARE_DIR, 'comparison.txt')
+T_PAIRED_COMPARE_RANKS = join(PAIRED_COMPARE_DIR, 'comparison_{test}_between_'
+    '{groupA}_{groupB}_{modality}_ranked_{metric}.rnk')
+PAIRED_COMPARE_RANKS = join(PAIRED_COMPARE_DIR, 'comparison.rnk')
+
 ### Volcano plots ###
 VOLCANO_DIR = join('<results>', 'volcano', 'min_{min_counts}_counts',
     'ratio_threshold_{ratio_threshold}', '{column}', '{groupA}_{groupB}',
@@ -125,7 +151,7 @@ LIMMA_RANKS = join(LIMMA_DIR, '{modality}', 'comparison.rnk')
 ### Limma GSEA ###
 LIMMA_GSEA_DIR = join(LIMMA_DIR, '{modality}', 'gsea', '{geneset_name}')
 LIMMA_GSEA_CONFIG = join(LIMMA_GSEA_DIR, 'config.yaml')
-T_LIMMA_GSEA_RESULTS = join(LIMMA_GSEA_DIR, 
+T_LIMMA_GSEA_RESULTS = join(LIMMA_GSEA_DIR,
     'comparison_prerank_GSEA_{geneset_name}_results.txt')
 LIMMA_GSEA_RESULTS = join(LIMMA_GSEA_DIR, 'GSEA_results.txt')
 T_LIMMA_GSEA_ENRICHMENT = join(LIMMA_GSEA_DIR,

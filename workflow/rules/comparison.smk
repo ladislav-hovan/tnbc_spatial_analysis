@@ -141,3 +141,96 @@ rule rename_volcano_plot:
         """
         mv {input.t_volcano} {output.volcano}
         """
+
+rule create_paired_files:
+    input:
+        script = join('<scripts>', 'create_paired_mapfile.py'),
+        metadata = METADATA_FILE,
+        lioness_output = LIONESS_OUTPUT,
+    output:
+        mapfile = PAIRED_MAPFILE,
+        adjusted_lioness_output = temp(ADJUSTED_LIONESS_OUTPUT),
+    wildcard_constraints:
+        # Doesn't contain any equal signs - that's reserved for restricted
+        pairing = '[a-zA-Z0-9_]+',
+    shell:
+        """
+        {input.script} \
+        -m {input.metadata} \
+        -l {input.lioness_output} \
+        -p {wildcards.pairing} \
+        -c {wildcards.column} \
+        -ga {wildcards.groupA} \
+        -gb {wildcards.groupB} \
+        -om {output.mapfile} \
+        -ol {output.adjusted_lioness_output}
+        """
+
+rule create_restricted_paired_files:
+    input:
+        script = join('<scripts>', 'create_paired_files.py'),
+        metadata = METADATA_FILE,
+        lioness_output = LIONESS_OUTPUT,
+    output:
+        mapfile = RESTRICTED_PAIRED_MAPFILE,
+        adjusted_lioness_output = temp(RESTRICTED_ADJUSTED_LIONESS_OUTPUT),
+    shell:
+        """
+        {input.script} \
+        -m {input.metadata} \
+        -l {input.lioness_output} \
+        -sc {wildcards.select_column} \
+        -sv {wildcards.select_value} \
+        -p {wildcards.pairing} \
+        -c {wildcards.column} \
+        -ga {wildcards.groupA} \
+        -gb {wildcards.groupB} \
+        -om {output.mapfile} \
+        -ol {output.adjusted_lioness_output}
+        """
+
+rule compare_paired_groups:
+    input:
+        script = join('<scripts>', 'fill_out_template.py'),
+        template = join('<templates>', 'compare_template.yaml'),
+        data = ADJUSTED_LIONESS_OUTPUT,
+        mapfile = PAIRED_MAPFILE,
+    output:
+        config = PAIRED_COMPARE_CONFIG,
+        t_comparison = temp(T_PAIRED_COMPARE_FILE),
+        t_ranks = temp(T_PAIRED_COMPARE_RANKS),
+    conda:
+        join('..', 'envs', 'sisana_env.yaml')
+    params:
+        compare_dir = subpath(output.t_ranks, parent=True),
+    shell:
+        """
+        {input.script} \
+        -t {input.template} \
+        -o {output.config} \
+        -s datafile {input.data} \
+        -s mapfile {input.mapfile} \
+        -s datatype {wildcards.modality} \
+        -s groupA {wildcards.groupA} \
+        -s groupB {wildcards.groupB} \
+        -s test {wildcards.test} \
+        -s rank_metric {wildcards.metric} \
+        -s output_dir {params.compare_dir}
+
+        sisana compare {output.config}
+        """
+
+rule rename_paired_compare_files:
+    input:
+        t_comparison = T_PAIRED_COMPARE_FILE,
+        t_ranks = T_PAIRED_COMPARE_RANKS,
+    output:
+        comparison = PAIRED_COMPARE_FILE,
+        ranks = PAIRED_COMPARE_RANKS,
+    params:
+        compare_dir = subpath(output.ranks, parent=True),
+    shell:
+        """
+        mv {input.t_comparison} {output.comparison}
+        mv {input.t_ranks} {output.ranks}
+        """

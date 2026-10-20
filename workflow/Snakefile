@@ -30,7 +30,7 @@ include: join('rules', 'variables.smk')
 # The order is: combination to be used for pairing, column, groupA, groupB
 # If you want to constrain a different column to a value (subset the samples),
 # you can specify the column as 'column1=value__column2'
-LIMMA_COMBINATIONS = [
+PAIRED_COMBINATIONS = [
     join('{0}', '{1}', '{2}_{3}').format(*combs) for combs in
     [
         ['Patient+Slide', 'Classification', 'Stroma', 'Tumor'],
@@ -47,7 +47,7 @@ TARGET_LIMMA_RESULTS = expand(
             '{modality}', 'results.tsv'),
         min_counts=config['min_counts_per_spot'],
         ratio_threshold=config['filter_ratio_threshold'],
-        combination=LIMMA_COMBINATIONS,
+        combination=PAIRED_COMBINATIONS,
         modality=config['modalities'],
     )
 
@@ -57,7 +57,7 @@ TARGET_LIMMA_GSEA_RESULTS = expand(
             '{modality}', 'gsea', '{geneset_name}', 'dotplot.png'),
         min_counts=config['min_counts_per_spot'],
         ratio_threshold=config['filter_ratio_threshold'],
-        combination=LIMMA_COMBINATIONS,
+        combination=PAIRED_COMBINATIONS,
         modality=config['gsea_modalities'],
         geneset_name=config['gene_sets'],
     )
@@ -68,11 +68,23 @@ TARGET_LIMMA_VOLCANO_PLOTS = expand(
         'volcano', '0.05', 'volcano_plot.png'),
     min_counts=config['min_counts_per_spot'],
     ratio_threshold=config['filter_ratio_threshold'],
-    combination=LIMMA_COMBINATIONS,
+    combination=PAIRED_COMBINATIONS,
     modality=config['modalities'],
 )
 
-TARGET_COMBINATIONS = [
+TARGET_PAIRED_RESULTS = expand(
+        join('<results>', 'paired_comparisons', 'min_{min_counts}_counts',
+            'ratio_threshold_{ratio_threshold}', '{combination}',
+            '{modality}', '{test}', '{metric}', 'comparison.txt'),
+        min_counts=config['min_counts_per_spot'],
+        ratio_threshold=config['filter_ratio_threshold'],
+        combination=PAIRED_COMBINATIONS,
+        modality=config['modalities'],
+        test=config['tests'],
+        metric=config['metrics'],
+    )
+
+UNPAIRED_COMBINATIONS = [
     join('{0}', '{1}_{2}').format(*combs) for combs in
     [
         ['Classification', 'Stroma', 'Tumor'],
@@ -85,7 +97,7 @@ TARGET_VOLCANO_PLOTS = expand(
         '{test}', '{metric}', '0.05', 'volcano_plot.png'),
     min_counts=config['min_counts_per_spot'],
     ratio_threshold=config['filter_ratio_threshold'],
-    combination=TARGET_COMBINATIONS,
+    combination=UNPAIRED_COMBINATIONS,
     modality=config['modalities'],
     test=config['tests'],
     metric=config['metrics'],
@@ -110,6 +122,7 @@ rule all:
         TARGET_LIMMA_GSEA_RESULTS,
         TARGET_LIMMA_RESULTS,
         TARGET_LIMMA_VOLCANO_PLOTS,
+        TARGET_PAIRED_RESULTS,
         TARGET_VOLCANO_PLOTS,
         get_target_spot_level_degrees,
     default_target:

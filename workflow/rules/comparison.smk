@@ -10,7 +10,7 @@ rule create_mapfile:
         mapfile = MAPFILE,
     wildcard_constraints:
         # Doesn't contain any equal signs - that's reserved for restricted
-        column = '[a-zA-Z0-9_]+',
+        column = '[^=]+',
     shell:
         """
         {input.script} \
@@ -144,41 +144,37 @@ rule rename_volcano_plot:
 
 rule create_paired_files:
     input:
-        script = join('<scripts>', 'create_paired_mapfile.py'),
+        script = join('<scripts>', 'create_paired_files.py'),
         metadata = METADATA_FILE,
-        lioness_output = LIONESS_OUTPUT,
     output:
         mapfile = PAIRED_MAPFILE,
-        adjusted_lioness_output = temp(ADJUSTED_LIONESS_OUTPUT),
+        adjustment = ADJUSTMENT_FILE,
     wildcard_constraints:
         # Doesn't contain any equal signs - that's reserved for restricted
-        pairing = '[a-zA-Z0-9_]+',
+        pairing = '[^=]+',
     shell:
         """
         {input.script} \
         -m {input.metadata} \
-        -l {input.lioness_output} \
         -p {wildcards.pairing} \
         -c {wildcards.column} \
         -ga {wildcards.groupA} \
         -gb {wildcards.groupB} \
         -om {output.mapfile} \
-        -ol {output.adjusted_lioness_output}
+        -oa {output.adjustment}
         """
 
 rule create_restricted_paired_files:
     input:
         script = join('<scripts>', 'create_paired_files.py'),
         metadata = METADATA_FILE,
-        lioness_output = LIONESS_OUTPUT,
     output:
         mapfile = RESTRICTED_PAIRED_MAPFILE,
-        adjusted_lioness_output = temp(RESTRICTED_ADJUSTED_LIONESS_OUTPUT),
+        adjustment = RESTRICTED_ADJUSTMENT_FILE,
     shell:
         """
         {input.script} \
         -m {input.metadata} \
-        -l {input.lioness_output} \
         -sc {wildcards.select_column} \
         -sv {wildcards.select_value} \
         -p {wildcards.pairing} \
@@ -186,7 +182,22 @@ rule create_restricted_paired_files:
         -ga {wildcards.groupA} \
         -gb {wildcards.groupB} \
         -om {output.mapfile} \
-        -ol {output.adjusted_lioness_output}
+        -oa {output.adjustment}
+        """
+
+rule adjust_lioness_output_for_paired:
+    input:
+        script = join('<scripts>', 'adjust_lioness_output_for_paired.py'),
+        lioness_output = LIONESS_OUTPUT,
+        adjustment = ADJUSTMENT_FILE,
+    output:
+        adjusted_lioness = ADJUSTED_LIONESS_OUTPUT,
+    shell:
+        """
+        {input.script} \
+        -il {input.lioness_output} \
+        -ia {input.adjustment} \
+        -o {output.adjusted_lioness}
         """
 
 rule compare_paired_groups:

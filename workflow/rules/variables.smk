@@ -99,23 +99,19 @@ T_COMPARE_RANKS = join(COMPARE_DIR, 'comparison_{test}_between_{groupA}_'
 COMPARE_RANKS = join(COMPARE_DIR, 'comparison.rnk')
 
 ### Paired group comparison ###
-ADJUSTED_LIONESS_OUTPUT = join('<results>', 'paired_comparisons',
+PAIRED_DIR = join('<results>', 'paired_comparisons',
     'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
-    '{pairing}', '{column}', '{groupA}_{groupB}', '{modality}_adjusted.tsv')
-RESTRICTED_ADJUSTED_LIONESS_OUTPUT = join('<results>', 'paired_comparisons',
-    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
-    '{pairing}', '{select_column}={select_value}__{column}',
-    '{groupA}_{groupB}', '{modality}_adjusted.tsv')
-PAIRED_MAPFILE = join('<results>', 'paired_comparisons',
-    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
-    '{pairing}', '{column}', '{groupA}_{groupB}', 'groups.csv')
-RESTRICTED_PAIRED_MAPFILE = join('<results>', 'comparisons',
+    '{pairing}', '{column}', '{groupA}_{groupB}')
+RESTRICTED_PAIRED_DIR = join('<results>', 'comparisons',
     'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
     '{pairing}', '{select_column}={select_value}__{column}',
-    '{groupA}_{groupB}', 'groups.csv')
-PAIRED_COMPARE_DIR = join('<results>', 'comparisons',
-    'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}', '{column}',
-    '{groupA}_{groupB}', '{modality}', '{test}', '{metric}')
+    '{groupA}_{groupB}')
+PAIRED_MAPFILE = join(PAIRED_DIR, 'groups.csv')
+RESTRICTED_PAIRED_MAPFILE = join(RESTRICTED_PAIRED_DIR, 'groups.csv')
+ADJUSTMENT_FILE = join(PAIRED_DIR, 'adjustment.csv')
+RESTRICTED_ADJUSTMENT_FILE = join(RESTRICTED_PAIRED_DIR, 'adjustment.csv')
+ADJUSTED_LIONESS_OUTPUT = join(PAIRED_DIR, '{modality}', 'adjusted.tsv')
+PAIRED_COMPARE_DIR = join(PAIRED_DIR, '{modality}', '{test}', '{metric}')
 PAIRED_COMPARE_CONFIG = join(PAIRED_COMPARE_DIR, 'config.yaml')
 T_PAIRED_COMPARE_FILE = join(PAIRED_COMPARE_DIR, 'comparison_{test}_between_'
     '{groupA}_{groupB}_{modality}.txt')

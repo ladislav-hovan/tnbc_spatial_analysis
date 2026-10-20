@@ -28,15 +28,15 @@ def adjust_lioness_output_for_paired(
     # Load the feather file and set the correct index column
     lioness = pd.read_feather(input_lioness)
     ind_col_name = lioness.columns[0]
-    lioness.set_index(ind_col_name, inplace=True).T
+    lioness = lioness.set_index(ind_col_name).T
     # Load the adjustment file
-    adjustment = pd.read_csv(input_adjustment)
+    adjustment = pd.read_csv(input_adjustment, index_col=0)
     # Subset the required columns
     selected = lioness.loc[adjustment['Keep']]
     # Group by condition and average the values
     adjusted = selected.groupby(adjustment['Condition']).mean()
     # Save the adjusted DataFrame
-    adjusted.to_csv(output_path, sep='\t')
+    adjusted.T.to_csv(output_path, sep='\t')
 
 ### Main body ###
 if __name__ == '__main__':

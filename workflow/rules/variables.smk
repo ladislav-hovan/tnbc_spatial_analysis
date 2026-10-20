@@ -113,11 +113,11 @@ RESTRICTED_ADJUSTMENT_FILE = join(RESTRICTED_PAIRED_DIR, 'adjustment.csv')
 ADJUSTED_LIONESS_OUTPUT = join(PAIRED_DIR, '{modality}', 'adjusted.tsv')
 PAIRED_COMPARE_DIR = join(PAIRED_DIR, '{modality}', '{test}', '{metric}')
 PAIRED_COMPARE_CONFIG = join(PAIRED_COMPARE_DIR, 'config.yaml')
-T_PAIRED_COMPARE_FILE = join(PAIRED_COMPARE_DIR, 'comparison_{test}_between_'
-    '{groupA}_{groupB}_{modality}.txt')
+T_PAIRED_COMPARE_FILE = join(PAIRED_COMPARE_DIR, 'comparison_{test}_'
+    '{modality}.txt')
 PAIRED_COMPARE_FILE = join(PAIRED_COMPARE_DIR, 'comparison.txt')
-T_PAIRED_COMPARE_RANKS = join(PAIRED_COMPARE_DIR, 'comparison_{test}_between_'
-    '{groupA}_{groupB}_{modality}_ranked_{metric}.rnk')
+T_PAIRED_COMPARE_RANKS = join(PAIRED_COMPARE_DIR, 'comparison_{test}_'
+    '{modality}_ranked_{metric}.rnk')
 PAIRED_COMPARE_RANKS = join(PAIRED_COMPARE_DIR, 'comparison.rnk')
 
 ### Volcano plots ###

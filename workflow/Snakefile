@@ -80,7 +80,7 @@ TARGET_PAIRED_RESULTS = expand(
         ratio_threshold=config['filter_ratio_threshold'],
         combination=PAIRED_COMBINATIONS,
         modality=config['modalities'],
-        test=config['tests'],
+        test=config['paired_tests'],
         metric=config['metrics'],
     )
 

@@ -20,6 +20,7 @@ lioness_threads: 8
 modalities: [ "expression", "indegrees", "outdegrees" ]
 gsea_modalities: [ "expression", "indegrees" ]
 tests: [ "mw" ]
+paired_tests: [ "wilcoxon" ]
 metrics: [ "mediandiff", "meandiff" ]
 gene_sets:
   Hallmarks: "<resources>/gene_sets/h.all.v2025.1.Hs.symbols.gmt"

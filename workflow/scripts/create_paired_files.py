@@ -118,6 +118,7 @@ def create_paired_files(
         # group_a vs group_b, drop everything else
         metadata_sel[condition] = metadata_sel[condition].apply(
             lambda x: np.nan if (x != group_a and x != group_b) else x)
+        adjustment['Condition'] = metadata_sel.index
         adjustment['Keep'] = (adjustment['Keep'] &
             ~metadata_sel[condition].isna())
         metadata_sel.dropna(subset=condition, inplace=True)
@@ -135,7 +136,7 @@ def create_paired_files(
     df = subset.pivot(columns=condition, values='index', index='Paired')
     # Save the resulting DataFrames
     df.to_csv(output_mapfile, index=False)
-    adjustment.to_csv(output_adjustment, sep='\t')
+    adjustment.to_csv(output_adjustment)
 
 ### Main body ###
 if __name__ == '__main__':

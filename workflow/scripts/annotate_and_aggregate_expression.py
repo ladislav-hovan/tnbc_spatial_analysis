@@ -44,10 +44,12 @@ def annotate_and_aggregate_expression(
     df_idx = df_idx.drop(columns=['array_x', 'array_y'])
     df_idx['region_annotation'] = df_idx.idxmax(axis=1)
     stoat_obj.assign_regions(mapping=df_idx['region_annotation'])
-    # Save aggregated expression data
+    # Remove regions without any expression
     st = stoat_obj.spatial[stoat_obj.table]
-    save_df_into_filelike(st.varm['collapsed'].sparse.to_dense(),
-        expression_path, 'feather')
+    df_dense = st.varm['collapsed'].sparse.to_dense()
+    df_dense = df_dense[~((df_dense > 0).mean(axis=1) == 0)]
+    # Save aggregated expression data
+    save_df_into_filelike(df_dense, expression_path, 'feather')
 
 ### Main body ###
 if __name__ == '__main__':

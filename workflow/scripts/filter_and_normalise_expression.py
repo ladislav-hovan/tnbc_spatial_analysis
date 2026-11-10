@@ -31,6 +31,8 @@ def filter_and_normalise_expression(
     # Filter the genes
     to_keep = (df > 0).mean(axis=0) >= ratio_threshold
     f_df = df.loc[:, to_keep].copy()
+    # Remove regions without any expression
+    f_df = f_df.loc[~((f_df > 0).mean(axis=1) == 0), :]
     # Normalise the counts to the median
     region_counts = f_df.sum(axis=1)
     target_count = region_counts.median()

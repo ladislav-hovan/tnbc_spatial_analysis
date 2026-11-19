@@ -98,6 +98,12 @@ T_COMPARE_RANKS = join(COMPARE_DIR, 'comparison_{test}_between_{groupA}_'
     '{groupB}_{modality}_ranked_{metric}.rnk')
 COMPARE_RANKS = join(COMPARE_DIR, 'comparison.rnk')
 
+### Volcano plots ###
+VOLCANO_DIR = join(COMPARE_DIR, 'volcano', '{pval}')
+VOLCANO_CONFIG = join(VOLCANO_DIR, 'config.yaml')
+T_VOLCANO_PLOT = join(VOLCANO_DIR, 'volcano_plot_adjp_{pval}_top_15.png')
+VOLCANO_PLOT = join(VOLCANO_DIR, 'volcano_plot.png')
+
 ### Paired group comparison ###
 PAIRED_DIR = join('<results>', 'paired_comparisons',
     'min_{min_counts}_counts', 'ratio_threshold_{ratio_threshold}',
@@ -111,22 +117,35 @@ RESTRICTED_PAIRED_MAPFILE = join(RESTRICTED_PAIRED_DIR, 'groups.csv')
 ADJUSTMENT_FILE = join(PAIRED_DIR, 'adjustment.csv')
 RESTRICTED_ADJUSTMENT_FILE = join(RESTRICTED_PAIRED_DIR, 'adjustment.csv')
 ADJUSTED_LIONESS_OUTPUT = join(PAIRED_DIR, '{modality}', 'adjusted.tsv')
-PAIRED_COMPARE_DIR = join(PAIRED_DIR, '{modality}', '{test}', '{metric}')
+PAIRED_COMPARE_DIR = join(PAIRED_DIR, '{modality}', '{test}')
 PAIRED_COMPARE_CONFIG = join(PAIRED_COMPARE_DIR, 'config.yaml')
 T_PAIRED_COMPARE_FILE = join(PAIRED_COMPARE_DIR, 'comparison_{test}_'
     '{modality}.txt')
 PAIRED_COMPARE_FILE = join(PAIRED_COMPARE_DIR, 'comparison.txt')
 T_PAIRED_COMPARE_RANKS = join(PAIRED_COMPARE_DIR, 'comparison_{test}_'
-    '{modality}_ranked_{metric}.rnk')
+    '{modality}_ranked_mediandiff.rnk')
 PAIRED_COMPARE_RANKS = join(PAIRED_COMPARE_DIR, 'comparison.rnk')
 
-### Volcano plots ###
-VOLCANO_DIR = join('<results>', 'volcano', 'min_{min_counts}_counts',
-    'ratio_threshold_{ratio_threshold}', '{column}', '{groupA}_{groupB}',
-    '{modality}', '{test}', '{metric}', '{pval}')
-VOLCANO_CONFIG = join(VOLCANO_DIR, 'config.yaml')
-T_VOLCANO_PLOT = join(VOLCANO_DIR, 'volcano_plot_adjp_{pval}_top_15.png')
-VOLCANO_PLOT = join(VOLCANO_DIR, 'volcano_plot.png')
+### Paired volcano plots ###
+PAIRED_VOLCANO_DIR = join(PAIRED_COMPARE_DIR, 'volcano', '{pval}')
+PAIRED_VOLCANO_CONFIG = join(PAIRED_VOLCANO_DIR, 'config.yaml')
+T_PAIRED_VOLCANO_PLOT = join(PAIRED_VOLCANO_DIR,
+    'volcano_plot_adjp_{pval}_top_15.png')
+PAIRED_VOLCANO_PLOT = join(PAIRED_VOLCANO_DIR, 'volcano_plot.png')
+
+### Paired GSEA ###
+PAIRED_GSEA_DIR = join(PAIRED_DIR, '{modality}', '{test}', 'gsea',
+    '{geneset_name}')
+PAIRED_GSEA_CONFIG = join(PAIRED_GSEA_DIR, 'config.yaml')
+T_PAIRED_GSEA_RESULTS = join(PAIRED_GSEA_DIR,
+    'comparison_prerank_GSEA_{geneset_name}_results.txt')
+PAIRED_GSEA_RESULTS = join(PAIRED_GSEA_DIR, 'GSEA_results.txt')
+T_PAIRED_GSEA_ENRICHMENT = join(PAIRED_GSEA_DIR,
+    'comparison_GSEA_{geneset_name}_basic_enrichment_plot.png')
+PAIRED_GSEA_ENRICHMENT = join(PAIRED_GSEA_DIR, 'enrichment_plot.png')
+T_PAIRED_GSEA_DOTPLOT = join(PAIRED_GSEA_DIR,
+    'comparison_GSEA_{geneset_name}_basic_enrichment_dotplot.png')
+PAIRED_GSEA_DOTPLOT = join(PAIRED_GSEA_DIR, 'dotplot.png')
 
 ### Limma comparison ###
 METADATA_FILE = join(ANNOTATED_DIR, 'ratio_threshold_{ratio_threshold}',
@@ -144,6 +163,16 @@ LIMMA_DIR = join('<results>', 'limma', 'min_{min_counts}_counts',
 LIMMA_RESULTS = join(LIMMA_DIR, '{modality}', 'results.tsv')
 LIMMA_RANKS = join(LIMMA_DIR, '{modality}', 'comparison.rnk')
 
+### Limma volcano plots ###
+LIMMA_VOLCANO_RESULTS = join(LIMMA_DIR, '{modality}', 'results_volcano.tsv')
+LIMMA_VOLCANO_DIR = join('<results>', 'limma', 'min_{min_counts}_counts',
+    'ratio_threshold_{ratio_threshold}', '{pairing}', '{column}',
+    '{groupA}_{groupB}', '{modality}', 'volcano', '{pval}')
+LIMMA_VOLCANO_CONFIG = join(LIMMA_VOLCANO_DIR, 'config.yaml')
+T_LIMMA_VOLCANO_PLOT = join(LIMMA_VOLCANO_DIR,
+    'volcano_plot_adjp_{pval}_top_15.png')
+LIMMA_VOLCANO_PLOT = join(LIMMA_VOLCANO_DIR, 'volcano_plot.png')
+
 ### Limma GSEA ###
 LIMMA_GSEA_DIR = join(LIMMA_DIR, '{modality}', 'gsea', '{geneset_name}')
 LIMMA_GSEA_CONFIG = join(LIMMA_GSEA_DIR, 'config.yaml')
@@ -156,13 +185,3 @@ LIMMA_GSEA_ENRICHMENT = join(LIMMA_GSEA_DIR, 'enrichment_plot.png')
 T_LIMMA_GSEA_DOTPLOT = join(LIMMA_GSEA_DIR,
     'comparison_GSEA_{geneset_name}_basic_enrichment_dotplot.png')
 LIMMA_GSEA_DOTPLOT = join(LIMMA_GSEA_DIR, 'dotplot.png')
-
-### Limma volcano plots ###
-LIMMA_VOLCANO_RESULTS = join(LIMMA_DIR, '{modality}', 'results_volcano.tsv')
-LIMMA_VOLCANO_DIR = join('<results>', 'limma', 'min_{min_counts}_counts',
-    'ratio_threshold_{ratio_threshold}', '{pairing}', '{column}',
-    '{groupA}_{groupB}', '{modality}', 'volcano', '{pval}')
-LIMMA_VOLCANO_CONFIG = join(LIMMA_VOLCANO_DIR, 'config.yaml')
-T_LIMMA_VOLCANO_PLOT = join(LIMMA_VOLCANO_DIR,
-    'volcano_plot_adjp_{pval}_top_15.png')
-LIMMA_VOLCANO_PLOT = join(LIMMA_VOLCANO_DIR, 'volcano_plot.png')

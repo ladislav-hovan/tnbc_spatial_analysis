@@ -54,6 +54,66 @@ rule run_limma:
         -o {output.limma_results}
         """
 
+rule convert_limma_results_for_volcano_plot:
+    input:
+        script = join('<scripts>',
+            'convert_limma_results_for_volcano_plot.py'),
+        results = LIMMA_RESULTS,
+    output:
+        adjusted_results = join(LIMMA_DIR, '{modality}',
+            'results_volcano.tsv'),
+    shell:
+        """
+        {input.script} \
+        -i {input.results} \
+        -m logFC "logFC_({wildcards.groupB}-{wildcards.groupA})" \
+        -o {output.adjusted_results}
+        """
+
+rule create_limma_volcano_plot:
+    input:
+        script = join('<scripts>', 'fill_out_template.py'),
+        template = join('<templates>', 'volcano_template.yaml'),
+        comparison = LIMMA_VOLCANO_RESULTS,
+    output:
+        config = LIMMA_VOLCANO_CONFIG,
+        t_volcano = temp(T_LIMMA_VOLCANO_PLOT),
+    conda:
+        join('..', 'envs', 'sisana_env.yaml')
+    params:
+        diffcol = (lambda wildcards: f'logFC_({wildcards.groupB}-'
+            f'{wildcards.groupA})'),
+        volcano_dir = subpath(output.t_volcano, parent=True),
+    shell:
+        """
+        {input.script} \
+        -t {input.template} \
+        -o {output.config} \
+        -s statsfile {input.comparison} \
+        -s diffcol "{params.diffcol}" \
+        -s groupA {wildcards.groupA} \
+        -s groupB {wildcards.groupB} \
+        -s adjpcol adj.P.Val \
+        -s x_thresh 1.5 \
+        -s pval_thresh {wildcards.pval} \
+        -s difftype median \
+        -s output_dir {params.volcano_dir}
+
+        sisana visualize volcano {output.config} || touch {output.t_volcano}
+        """
+
+rule rename_limma_volcano_plot:
+    input:
+        t_volcano = T_LIMMA_VOLCANO_PLOT,
+    output:
+        volcano = LIMMA_VOLCANO_PLOT,
+    params:
+        volcano_dir = subpath(output.volcano, parent=True),
+    shell:
+        """
+        mv {input.t_volcano} {output.volcano}
+        """
+
 rule create_limma_rankfile:
     input:
         script = join('<scripts>', 'create_limma_rankfile.py'),
@@ -118,64 +178,4 @@ rule rename_limma_gsea_files:
         mv {input.t_gsea} {output.gsea}
         mv {input.t_enrich_plot} {output.enrich_plot}
         mv {input.t_dotplot} {output.dotplot}
-        """
-
-rule convert_limma_results_for_volcano_plot:
-    input:
-        script = join('<scripts>',
-            'convert_limma_results_for_volcano_plot.py'),
-        results = LIMMA_RESULTS,
-    output:
-        adjusted_results = join(LIMMA_DIR, '{modality}',
-            'results_volcano.tsv'),
-    shell:
-        """
-        {input.script} \
-        -i {input.results} \
-        -m logFC "logFC_({wildcards.groupB}-{wildcards.groupA})" \
-        -o {output.adjusted_results}
-        """
-
-rule create_limma_volcano_plot:
-    input:
-        script = join('<scripts>', 'fill_out_template.py'),
-        template = join('<templates>', 'volcano_template.yaml'),
-        comparison = LIMMA_VOLCANO_RESULTS,
-    output:
-        config = LIMMA_VOLCANO_CONFIG,
-        t_volcano = temp(T_LIMMA_VOLCANO_PLOT),
-    conda:
-        join('..', 'envs', 'sisana_env.yaml')
-    params:
-        diffcol = (lambda wildcards: f'logFC_({wildcards.groupB}-'
-            f'{wildcards.groupA})'),
-        volcano_dir = subpath(output.t_volcano, parent=True),
-    shell:
-        """
-        {input.script} \
-        -t {input.template} \
-        -o {output.config} \
-        -s statsfile {input.comparison} \
-        -s diffcol "{params.diffcol}" \
-        -s groupA {wildcards.groupA} \
-        -s groupB {wildcards.groupB} \
-        -s adjpcol adj.P.Val \
-        -s x_thresh 1.5 \
-        -s pval_thresh {wildcards.pval} \
-        -s difftype median \
-        -s output_dir {params.volcano_dir}
-
-        sisana visualize volcano {output.config} || touch {output.t_volcano}
-        """
-
-rule rename_limma_volcano_plot:
-    input:
-        t_volcano = T_LIMMA_VOLCANO_PLOT,
-    output:
-        volcano = LIMMA_VOLCANO_PLOT,
-    params:
-        volcano_dir = subpath(output.volcano, parent=True),
-    shell:
-        """
-        mv {input.t_volcano} {output.volcano}
         """

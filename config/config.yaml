@@ -10,9 +10,9 @@ pathvars:
   templates: "workflow/sisana_templates"
 # Preprocessing settings
 slide_selection: "best_genes_median"
-min_counts_per_spot: [ 0 ]
+min_counts_per_spot: [ 0, 500, 1000 ]
 clustering_resolutions: [ 0.5, 1.0 ]
-filter_ratio_threshold: [ 0.1 ]
+filter_ratio_threshold: [ 0.1, 0.2 ]
 # Network generation settings
 gpu_ids: [ 0, 1, 2 ]
 lioness_threads: 8

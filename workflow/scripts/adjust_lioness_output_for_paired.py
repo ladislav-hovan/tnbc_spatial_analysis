@@ -33,8 +33,11 @@ def adjust_lioness_output_for_paired(
     adjustment = pd.read_csv(input_adjustment, index_col=0)
     # Subset the required columns
     selected = lioness.loc[adjustment['Keep']]
-    # Group by condition and average the values
-    adjusted = selected.groupby(adjustment['Condition']).mean()
+    # Group by condition and take the median of the values
+    adjusted = selected.groupby(adjustment['Condition']).median()
+    # Drop genes that are zero everywhere
+    mask = ((adjusted == 0.0).mean(axis=0) < 1.0)
+    adjusted = adjusted.loc[:, mask] 
     # Save the adjusted DataFrame
     adjusted.T.to_csv(output_path, sep='\t')
 

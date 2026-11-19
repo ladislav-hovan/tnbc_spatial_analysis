@@ -51,6 +51,16 @@ TARGET_LIMMA_RESULTS = expand(
         modality=config['modalities'],
     )
 
+TARGET_LIMMA_VOLCANO_PLOTS = expand(
+    join('<results>', 'limma', 'min_{min_counts}_counts',
+        'ratio_threshold_{ratio_threshold}', '{combination}', '{modality}',
+        'volcano', '0.05', 'volcano_plot.png'),
+    min_counts=config['min_counts_per_spot'],
+    ratio_threshold=config['filter_ratio_threshold'],
+    combination=PAIRED_COMBINATIONS,
+    modality=config['modalities'],
+)
+
 TARGET_LIMMA_GSEA_RESULTS = expand(
         join('<results>', 'limma', 'min_{min_counts}_counts',
             'ratio_threshold_{ratio_threshold}', '{combination}',
@@ -62,26 +72,40 @@ TARGET_LIMMA_GSEA_RESULTS = expand(
         geneset_name=config['gene_sets'],
     )
 
-TARGET_LIMMA_VOLCANO_PLOTS = expand(
-    join('<results>', 'limma', 'min_{min_counts}_counts',
-        'ratio_threshold_{ratio_threshold}', '{combination}', '{modality}',
-        'volcano', '0.05', 'volcano_plot.png'),
-    min_counts=config['min_counts_per_spot'],
-    ratio_threshold=config['filter_ratio_threshold'],
-    combination=PAIRED_COMBINATIONS,
-    modality=config['modalities'],
-)
-
 TARGET_PAIRED_RESULTS = expand(
         join('<results>', 'paired_comparisons', 'min_{min_counts}_counts',
             'ratio_threshold_{ratio_threshold}', '{combination}',
-            '{modality}', '{test}', '{metric}', 'comparison.txt'),
+            '{modality}', '{test}', 'comparison.txt'),
         min_counts=config['min_counts_per_spot'],
         ratio_threshold=config['filter_ratio_threshold'],
         combination=PAIRED_COMBINATIONS,
         modality=config['modalities'],
         test=config['paired_tests'],
-        metric=config['metrics'],
+    )
+
+TARGET_PAIRED_VOLCANO_PLOTS = expand(
+        join('<results>', 'paired_comparisons', 'min_{min_counts}_counts',
+            'ratio_threshold_{ratio_threshold}', '{combination}',
+            '{modality}', '{test}', 'volcano', '0.05',
+            'volcano_plot.png'),
+        min_counts=config['min_counts_per_spot'],
+        ratio_threshold=config['filter_ratio_threshold'],
+        combination=PAIRED_COMBINATIONS,
+        modality=config['modalities'],
+        test=config['paired_tests'],
+    )
+
+TARGET_PAIRED_GSEA_RESULTS = expand(
+        join('<results>', 'paired_comparisons', 'min_{min_counts}_counts',
+            'ratio_threshold_{ratio_threshold}', '{combination}',
+            '{modality}', '{test}', 'gsea', '{geneset_name}',
+            'dotplot.png'),
+        min_counts=config['min_counts_per_spot'],
+        ratio_threshold=config['filter_ratio_threshold'],
+        combination=PAIRED_COMBINATIONS,
+        modality=config['gsea_modalities'],
+        test=config['paired_tests'],
+        geneset_name=config['gene_sets'],
     )
 
 UNPAIRED_COMBINATIONS = [
@@ -92,9 +116,9 @@ UNPAIRED_COMBINATIONS = [
 ]
 
 TARGET_VOLCANO_PLOTS = expand(
-    join('<results>', 'volcano', 'min_{min_counts}_counts',
+    join('<results>', 'comparisons', 'min_{min_counts}_counts',
         'ratio_threshold_{ratio_threshold}', '{combination}', '{modality}',
-        '{test}', '{metric}', '0.05', 'volcano_plot.png'),
+        '{test}', '{metric}', 'volcano', '0.05', 'volcano_plot.png'),
     min_counts=config['min_counts_per_spot'],
     ratio_threshold=config['filter_ratio_threshold'],
     combination=UNPAIRED_COMBINATIONS,
@@ -119,10 +143,12 @@ def get_target_spot_level_degrees(wc):
 ### Rules ###
 rule all:
     input:
-        TARGET_LIMMA_GSEA_RESULTS,
         TARGET_LIMMA_RESULTS,
         TARGET_LIMMA_VOLCANO_PLOTS,
+        TARGET_LIMMA_GSEA_RESULTS,
         TARGET_PAIRED_RESULTS,
+        TARGET_PAIRED_VOLCANO_PLOTS,
+        TARGET_PAIRED_GSEA_RESULTS,
         TARGET_VOLCANO_PLOTS,
         get_target_spot_level_degrees,
     default_target:
@@ -131,4 +157,5 @@ rule all:
 include: join('rules', 'preprocessing.smk')
 include: join('rules', 'networks.smk')
 include: join('rules', 'comparison.smk')
+include: join('rules', 'paired_comparison.smk')
 include: join('rules', 'limma.smk')
